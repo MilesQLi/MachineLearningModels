@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -17,15 +17,15 @@ def classification_dataset_produce(func, input_interval, num):
     input_interval = input_interval.astype(float)
     
     average = input_interval.mean(1)
-    span = input_interval.transpose()[1]-input_interval.transpose()[0]
+    span = input_interval.transpose()[1] - input_interval.transpose()[0]
     
     dimension = len(input_interval)
 
-    datas = np.ndarray((dimension,num))
+    datas = np.ndarray((dimension, num))
     
     for i in range(dimension):
         datas[i] = average[i]
-        datas[i] += span[i]*np.random.random(num) - span[i] / 2
+        datas[i] += span[i] * np.random.random(num) - span[i] / 2
     
     datas = datas.transpose()
     
@@ -34,17 +34,30 @@ def classification_dataset_produce(func, input_interval, num):
     for data in datas:
         outputs.append(func(data))
         
-    return [(data,output) for (data,output) in zip(datas,outputs)]
+    return [(data, output) for (data, output) in zip(datas, outputs)]
     '''    
     outputs = np.array(outputs)
     outputs.shape=(outputs.shape[0],1)
     return np.hstack((datas,outputs))
     '''
 
-def plot_data(x,y):
+def plot_data(x, y, input_interval):
     '''
     x must be 2 dimension
     '''
-    a = 5
-    plt.plot(x, y)
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    max = np.array(y).max()
+    classes = []
+    for i in range(max + 1):
+        cla = []
+        for j in range(len(x)):
+            if y[j] == i:
+                cla.append(x[j])
+        classes.append(cla)
+    
+    for i in range(len(classes)):
+        print classes[i]
+        plt.plot([x[0] for x in classes[i]], [x[1] for x in classes[i]], colors[i] + 'o')
+    plt.xlim(input_interval[0][0] - (input_interval[0][1] - input_interval[0][0]) / 10., input_interval[0][1] + (input_interval[0][1] - input_interval[0][0]) / 10.)
+    plt.ylim(input_interval[1][0] - (input_interval[1][1] - input_interval[1][0]) / 10., input_interval[1][1] + (input_interval[1][1] - input_interval[1][0]) / 10.)
     plt.show()
