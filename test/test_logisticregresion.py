@@ -64,7 +64,7 @@ if __name__ == '__main__':
     xx, yy = np.meshgrid(np.arange(5, 6, 0.3),
                          np.arange(18, 22, 0.3))
     Z = pred(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx)
+    Z = Z.reshape(xx.shape)
     
     dataset.plot_data(x, y,[[5,6],[18,22]],(xx,yy,Z))
     
