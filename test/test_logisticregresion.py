@@ -22,13 +22,14 @@ if __name__ == '__main__':
     linex2 = (23.5+3*linex1)/2
     assert(len(linex1==linex2))
     
-    trainx = np.array(x[:-10])
-    trainy = np.array(y[:-20])
-    testx = np.array(x[-20:])
-    testy = np.array(y[-20:])
+    trainx = np.array(x[:-30])
+    trainy = np.array(y[:-30])
+    #trainy.shape = (trainy.shape[0],1)
+    testx = np.array(x[-30:])
+    testy = np.array(y[-30:])
     
     X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
-    Y = T.ivector('y')
+    Y = T.vector('y')
     
     logi = logistic_softmax_regression.LogisticRegression(X,2)
     
@@ -44,16 +45,12 @@ if __name__ == '__main__':
     train = theano.function([X,Y], logi.negative_log_likelihood(Y), updates=updates)
     
     #input must be wrapped by []
-    pred = theano.function([X],outputs=logi.y)
+    pred = theano.function([X],outputs=logi.y_pred)
     
     error = theano.function([X,Y],outputs=logi.error(Y))
     
     epoch = 10000
-    
-    print pred(testx)
-    print testy
-    
-    '''
+
     for i in range(epoch):
         print 'epoch:',i
         print 'neg log likelihood:',train(trainx,trainy)
@@ -62,6 +59,7 @@ if __name__ == '__main__':
         #print logi.W.get_value()
         #print logi.b.get_value()
     print pred(testx)
+    print testy
     
     xx, yy = np.meshgrid(np.arange(5, 6, 0.3),
                          np.arange(18, 22, 0.3))
@@ -69,7 +67,4 @@ if __name__ == '__main__':
     Z = Z.reshape(xx.shape)
     
     dataset.plot_data(x, y,[[5,6],[18,22]],(xx,yy,Z))
-    '''
-    
-    
     
