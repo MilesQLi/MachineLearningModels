@@ -1,1 +1,1 @@
-__all__=['logistic_regression']
+__all__=['logistic_softmax_regression','FNN','Layers']

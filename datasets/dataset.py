@@ -56,7 +56,7 @@ def plot_data(x, y, input_interval, contour = None):
         classes.append(cla)
     
     for i in range(len(classes)):
-        print classes[i]
+        #print classes[i]
         plt.plot([x[0] for x in classes[i]], [x[1] for x in classes[i]], colors[i] + 'o')
     plt.xlim(input_interval[0][0] - (input_interval[0][1] - input_interval[0][0]) / 10., input_interval[0][1] + (input_interval[0][1] - input_interval[0][0]) / 10.)
     plt.ylim(input_interval[1][0] - (input_interval[1][1] - input_interval[1][0]) / 10., input_interval[1][1] + (input_interval[1][1] - input_interval[1][0]) / 10.)
