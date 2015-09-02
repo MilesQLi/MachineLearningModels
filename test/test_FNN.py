@@ -9,11 +9,10 @@ import theano.tensor as T
 from sklearn import datasets
 
 
-
 if __name__ == '__main__':
     n_samples = 5000
-    n_features = 2
-    n_informative = 2
+    n_features = 20
+    n_informative = 10
     n_redundant = 0
     n_classes = 2
     n_clusters_per_class = 1
@@ -27,13 +26,13 @@ if __name__ == '__main__':
     X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
     Y = T.ivector('y')
     
-    logi = FNN.FNN(X,[2], 2,2)
+    logi = FNN.FNN(X,[20,10,10], 20,2)
     
     cost = logi.negative_log_likelihood(Y)
     
     grads = [T.grad(cost,param) for param in logi.params]
     
-    alpha = 0.005
+    alpha = 0.1
     
     #!!!!!!!!!!!
     updates = [(param, param - alpha * grad) for param,grad in zip(logi.params, grads)]
@@ -46,7 +45,7 @@ if __name__ == '__main__':
     
     error = theano.function([X,Y],outputs=logi.error(Y))
     
-    epoch = 30000
+    epoch = 5000
     
     
     for i in range(epoch):
@@ -58,14 +57,14 @@ if __name__ == '__main__':
         #print logi.b.get_value()
     print pred(testx)
     print testy
-    
+    '''
     xx, yy = np.meshgrid(np.arange(x[:,0].min(), x[:,0].max(), 0.3),
                          np.arange(x[:,1].min(), x[:,1].max(), 0.3))
     Z = pred(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     
     dataset.plot_data(x, y,[[x[:,0].min(), x[:,0].max()],[x[:,1].min(), x[:,1].max()]],(xx,yy,Z))
-
+    '''
 
 
 '''
@@ -93,13 +92,13 @@ if __name__ == '__main__':
     X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
     Y = T.ivector('y')
     
-    logi = FNN.FNN(X,[2], 2,2)
+    logi = FNN.FNN(X,[5,5], 2,2)
     
     cost = logi.negative_log_likelihood(Y)
     
     grads = [T.grad(cost,param) for param in logi.params]
     
-    alpha = 0.11
+    alpha = 0.1
     
     #!!!!!!!!!!!
     updates = [(param, param - alpha * grad) for param,grad in zip(logi.params, grads)]
@@ -125,13 +124,13 @@ if __name__ == '__main__':
     print pred(testx)
     print testy
     
-    xx, yy = np.meshgrid(np.arange(5, 6, 0.3),
-                         np.arange(18, 22, 0.3))
+    xx, yy = np.meshgrid(np.arange(4, 7, 0.3),
+                         np.arange(17, 23, 0.3))
     Z = pred(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     
     dataset.plot_data(x, y,[[5,6],[18,22]],(xx,yy,Z))
-'''    
+
     
-    
+    '''
     
