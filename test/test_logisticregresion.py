@@ -60,6 +60,7 @@ if __name__ == '__main__':
         #print logi.b.get_value()
     print pred(testx)
     print testy
+    print logi.W.get_value(), logi.b.get_value()
     
     xx, yy = np.meshgrid(np.arange(5, 6, 0.3),
                          np.arange(18, 22, 0.3))

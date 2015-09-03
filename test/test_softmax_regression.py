@@ -34,7 +34,8 @@ if __name__ == '__main__':
     
     cost = logi.negative_log_likelihood(Y)
     
-    grads = [T.grad(cost,param) for param in logi.params]
+    grads = T.grad(cost, logi.params)
+    #grads = [T.grad(cost,param) for param in logi.params]
     
     alpha = 0.11
     

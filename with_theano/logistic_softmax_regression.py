@@ -12,6 +12,7 @@ class LogisticRegression(object):
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.W = theano.shared(np.random.uniform(
+            low=-np.sqrt(6. / (n_in + 1)),
             high=np.sqrt(6. / (n_in + 1)),
             size=(n_in, )),name='W',borrow=True)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

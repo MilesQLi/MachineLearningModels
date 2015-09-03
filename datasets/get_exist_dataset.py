@@ -47,6 +47,27 @@ _______________________________
 '''
 nlp:
 
+NER:
+
+atis irline Travel Information System:
+def atisfold(fold):
+    filename = 'atis.fold'+str(fold)+'.pkl.gz'
+    f = gzip.open(filename, 'rb')
+    train_set, valid_set, test_set, dicts = cPickle.load(f)
+    return train_set, valid_set, test_set, dicts
+
+every set is a 3 tuple. the first item is the sentence with number represent the word, the third item is the labels to the sentences, the third item is what I don't know but maybe not useful here
+
+dicts contains two dicts dicts['words2idx'] map word to index dicts['labels2idx'] maps label 2 index
+
+__________
+
+
+
+_____________________________________________
+sentiment:
+
+
 
 
 
