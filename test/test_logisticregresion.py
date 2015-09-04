@@ -37,7 +37,7 @@ if __name__ == '__main__':
     
     grads = [T.grad(cost,param) for param in logi.params]
     
-    alpha = 0.11
+    alpha = 0.001
     
     #!!!!!!!!!!!
     updates = [(logi.W,logi.W- 0.01*grads[0]),(logi.b,logi.b- 0.1*grads[1])]
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     
     error = theano.function([X,Y],outputs=logi.error(Y))
     
-    epoch = 10000
+    epoch = 500000
 
     for i in range(epoch):
         print 'epoch:',i

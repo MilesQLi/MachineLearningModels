@@ -39,6 +39,7 @@ class LogisticRegression(object):
     '''                     
     
     def negative_log_likelihood(self,y):
+        #TODO sometimes it is nan
         return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
     
     
