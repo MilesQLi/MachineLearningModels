@@ -41,7 +41,7 @@ def classification_dataset_produce(func, input_interval, num):
     return np.hstack((datas,outputs))
     '''
 
-def plot_data(x, y, input_interval, contour = None):
+def plot_data(x, y, input_interval, contour = None, origin = None, learned= None):
     '''
     x must be 2 dimension
     '''
@@ -63,4 +63,13 @@ def plot_data(x, y, input_interval, contour = None):
     if contour is not None:
         cm = plt.cm.RdBu
         plt.contourf(contour[0], contour[1], contour[2], cmap=cm, alpha=.8)
+    
+    if origin is not None:
+        plt.plot(origin[0],origin[1],'r-')
+        
+    if learned is not None:
+        plt.plot(learned[0],learned[1],'y-')
+    
+    
     plt.show()
+    
