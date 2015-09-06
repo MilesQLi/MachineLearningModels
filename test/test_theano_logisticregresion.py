@@ -49,7 +49,7 @@ if __name__ == '__main__':
     
     error = theano.function([X,Y],outputs=logi.error(Y))
     
-    epoch = 500000
+    epoch = 5000
 
     for i in range(epoch):
         print 'epoch:',i

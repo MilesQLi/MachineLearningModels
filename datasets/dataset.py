@@ -45,8 +45,9 @@ def plot_data(x, y, input_interval, contour = None, origin = None, learned= None
     '''
     x must be 2 dimension
     '''
-    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
-    max = np.array(y).max()
+    #colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    #max = np.array(y).max()
+    '''
     classes = []
     for i in range(max + 1):
         cla = []
@@ -56,10 +57,11 @@ def plot_data(x, y, input_interval, contour = None, origin = None, learned= None
         classes.append(cla)
     
     for i in range(len(classes)):
-        #print classes[i]
+        print classes[i]
         plt.plot([x[0] for x in classes[i]], [x[1] for x in classes[i]], colors[i] + 'o')
-    plt.xlim(input_interval[0][0] - (input_interval[0][1] - input_interval[0][0]) / 10., input_interval[0][1] + (input_interval[0][1] - input_interval[0][0]) / 10.)
-    plt.ylim(input_interval[1][0] - (input_interval[1][1] - input_interval[1][0]) / 10., input_interval[1][1] + (input_interval[1][1] - input_interval[1][0]) / 10.)
+    '''
+    #plt.xlim(input_interval[0][0] - (input_interval[0][1] - input_interval[0][0]) / 10., input_interval[0][1] + (input_interval[0][1] - input_interval[0][0]) / 10.)
+    #plt.ylim(input_interval[1][0] - (input_interval[1][1] - input_interval[1][0]) / 10., input_interval[1][1] + (input_interval[1][1] - input_interval[1][0]) / 10.)
     if contour is not None:
         cm = plt.cm.RdBu
         plt.contourf(contour[0], contour[1], contour[2], cmap=cm, alpha=.8)
@@ -70,6 +72,7 @@ def plot_data(x, y, input_interval, contour = None, origin = None, learned= None
     if learned is not None:
         plt.plot(learned[0],learned[1],'y-')
     
+    plt.scatter(np.array(x)[:,0],np.array(x)[:,1],c=y,alpha=1.)
     
     plt.show()
     

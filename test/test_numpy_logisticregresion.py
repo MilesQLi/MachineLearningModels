@@ -12,7 +12,7 @@ def func(x):
         return 0
 
 if __name__ == '__main__':
-    datas = dataset.classification_dataset_produce(func,[[5,6],[18,22]],1030)
+    datas = dataset.classification_dataset_produce(func,[[5,6],[18,22]],1100)
     x = [list(data[0]) for data in datas]
     y = [data[1] for data in datas]
     
@@ -20,11 +20,11 @@ if __name__ == '__main__':
     linex2 = (23.5+3*linex1)/2
     assert(len(linex1==linex2))
     
-    trainx = np.array(x[:-30])
-    trainy = np.array(y[:-30])
+    trainx = np.array(x[:-100])
+    trainy = np.array(y[:-100])
     #trainy.shape = (trainy.shape[0],1)
-    testx = np.array(x[-30:])
-    testy = np.array(y[-30:])
+    testx = np.array(x[-100:])
+    testy = np.array(y[-100:])
     
     logi = logistic_softmax_regression.LogisticRegression(2)
     

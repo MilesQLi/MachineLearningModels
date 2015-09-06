@@ -35,8 +35,8 @@ if __name__ == '__main__':
     x,y = datasets.make_classification(n_samples = n_samples, n_redundant = n_redundant,n_informative=n_informative,n_clusters_per_class = n_clusters_per_class, n_features = n_features,n_classes = n_classes)
 
 _______________________________ 
-
-
+from sklearn import datasets
+datasets.make_moons(sample number,shuffle or not,noise=0.21)
 
    
     

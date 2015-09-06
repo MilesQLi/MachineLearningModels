@@ -10,6 +10,58 @@ from sklearn import datasets
 
 
 if __name__ == '__main__':
+    x,y = datasets.make_moons(500, noise=0.21)
+    y = y.astype(int)
+    trainx = x[:-50]
+    trainy = y[:-50]
+    testx = x[-50:]
+    testy = y[-50:]
+    
+    X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
+    Y = T.ivector('y')
+    
+    logi = FNN.FNN(X,[3], 2,2)
+    
+    cost = logi.negative_log_likelihood(Y)
+    
+    grads = [T.grad(cost,param) for param in logi.params]
+    
+    alpha = 0.01
+    
+    #!!!!!!!!!!!
+    updates = [(param, param - alpha * grad) for param,grad in zip(logi.params, grads)]
+    
+    train = theano.function([X,Y], logi.negative_log_likelihood(Y), updates=updates)
+    
+    #input must be wrapped by []
+    pred = theano.function([X],outputs=logi.y_pred)
+    
+    
+    error = theano.function([X,Y],outputs=logi.error(Y))
+    
+    epoch = 5000
+    
+    
+    for i in range(epoch):
+        print 'epoch:',i
+        print 'neg log likelihood:',train(trainx,trainy)
+        print 'mean error:',error(testx,testy)
+       # print np.array(pred(testx)).round().astype(int),testy
+        #print logi.W.get_value()
+        #print logi.b.get_value()
+    print pred(testx)
+    print testy
+    xx, yy = np.meshgrid(np.arange(x[:,0].min()-.5, x[:,0].max()+.5, 0.3),
+                         np.arange(x[:,1].min()-.5, x[:,1].max()+.5, 0.3))
+    Z = pred(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    
+    dataset.plot_data(x, y,[[x[:,0].min(), x[:,0].max()],[x[:,1].min(), x[:,1].max()]],(xx,yy,Z))
+    
+
+
+'''
+if __name__ == '__main__':
     n_samples = 5000
     n_features = 20
     n_informative = 10
@@ -57,7 +109,6 @@ if __name__ == '__main__':
         #print logi.b.get_value()
     print pred(testx)
     print testy
-    '''
     xx, yy = np.meshgrid(np.arange(x[:,0].min(), x[:,0].max(), 0.3),
                          np.arange(x[:,1].min(), x[:,1].max(), 0.3))
     Z = pred(np.c_[xx.ravel(), yy.ravel()])
