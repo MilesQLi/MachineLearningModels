@@ -14,10 +14,11 @@ class FNN(object):
         self.layers.append(layer)
         self.params += layer.params
         for j in range(1,len(n_neurons)):
-            layer = FullConnectedLayer(self.layers[j-1].output, n_neurons[j-1], n_neurons[j])
+            layer = FullConnectedLayer(T.nnet.sigmoid(self.layers[j-1].output), n_neurons[j-1], n_neurons[j])
             self.layers.append(layer)
             self.params += layer.params
         self.sigmoid = SoftmaxRegression(self.layers[-1].output,self.layers[-1].n_out, n_ouput)
+        self.params += self.sigmoid.params
         self.y = self.sigmoid.y
         self.y_pred = self.sigmoid.y_pred
         self.negative_log_likelihood = self.sigmoid.negative_log_likelihood

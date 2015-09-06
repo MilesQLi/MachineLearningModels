@@ -20,13 +20,13 @@ if __name__ == '__main__':
     X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
     Y = T.ivector('y')
     
-    logi = FNN.FNN(X,[3], 2,2)
+    logi = FNN.FNN(X,[5], 2,2)
     
     cost = logi.negative_log_likelihood(Y)
     
-    grads = [T.grad(cost,param) for param in logi.params]
+    grads = T.grad(cost,logi.params)
     
-    alpha = 0.01
+    alpha = 0.091
     
     #!!!!!!!!!!!
     updates = [(param, param - alpha * grad) for param,grad in zip(logi.params, grads)]
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
     error = theano.function([X,Y],outputs=logi.error(Y))
     
-    epoch = 5000
+    epoch = 100000
     
     
     for i in range(epoch):
