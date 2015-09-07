@@ -64,7 +64,7 @@ def plot_data(x, y, input_interval, contour = None, origin = None, learned= None
     #plt.ylim(input_interval[1][0] - (input_interval[1][1] - input_interval[1][0]) / 10., input_interval[1][1] + (input_interval[1][1] - input_interval[1][0]) / 10.)
     if contour is not None:
         cm = plt.cm.RdBu
-        plt.contourf(contour[0], contour[1], contour[2], cmap=cm, alpha=.8)
+        plt.contourf(contour[0], contour[1], contour[2], cmap=plt.cm.Spectral, alpha=.8)
     
     if origin is not None:
         plt.plot(origin[0],origin[1],'r-')

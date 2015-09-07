@@ -20,7 +20,7 @@ if __name__ == '__main__':
     X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
     Y = T.ivector('y')
     
-    logi = FNN.FNN(X,[5], 2,2)
+    logi = FNN.FNN(X,[3,2], 2,2)
     
     cost = logi.negative_log_likelihood(Y)
     
