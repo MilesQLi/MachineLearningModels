@@ -35,7 +35,13 @@ class FNN(object):
         prob = self.pred_prob(x)
         return np.argmax(prob, axis = 1)
     
-    def train(self, x, y, alpha = 0.011):
+    def error(self, x, y):
+        y_pred = self.pred(x)
+        z = y_pred != y
+        z = z.astype(int)
+        return np.mean(z)
+    
+    def train(self, x, y, alpha = 0.0011):
         n_sample = x.shape[0]
         activations = self.pred_prob(x,True)
         delta = []
@@ -46,19 +52,26 @@ class FNN(object):
         
         ranges = range(len(self.Ws))
         ranges.reverse()
-        for i in activations:
-            print i.shape
+        #for i in activations:
+            #print i.shape
         #print ranges
+        
+        #print activations[0].shape,activations[1].shape,activations[2].shape
         for i in ranges:
             dWs.append(np.dot(activations[i].T,delta[-1]) / n_sample)
             dbs.append(np.sum(delta[-1],axis = 0,keepdims = True) / n_sample)
-            print i, delta[-1].shape,self.Ws[i].T.shape,np.dot(delta[-1],self.Ws[i].T).shape,(activations[i]*(1-activations[i])).shape
+            #print i, delta[-1].shape,self.Ws[i].T.shape,np.dot(delta[-1],self.Ws[i].T).shape,(activations[i]*(1-activations[i])).shape
             delta.append(np.dot(delta[-1],self.Ws[i].T)*activations[i]*(1-activations[i]))
         dWs.reverse()
         dbs.reverse()
+        #print len(self.Ws),len(self.bs),len(dWs),len(dbs)
+        print self.Ws[0].shape,dWs[0].shape
+        print self.Ws[1].shape,dWs[1].shape
+        print self.bs[0].shape,dbs[0].shape
+        print self.bs[1].shape,dbs[1].shape
+        #print dWs[0][0]
         for i in range(len(self.Ws)):
             self. Ws[i] -= alpha *dWs[i]
-            print self. bs[i].shape,dbs[i].shape
+            #print self. bs[i].shape,dbs[i].shape
             self. bs[i] -= alpha *dbs[i]
-    
     
