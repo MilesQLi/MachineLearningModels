@@ -77,9 +77,10 @@ sentiment:
 image:
 
 minist:
-    f = gzip.open('mini_mnist.pkl.gz', 'rb')
-    x = cPickle.load(f)
-    y = cPickle.load(f)
+    f = gzip.open('mnist.pkl.gz', 'rb')
+    train_set, valid_set, test_set = cPickle.load(f)
+    train_x = train_set[0]
+    train_y = train_set[1]
 _______________________________ 
 
 

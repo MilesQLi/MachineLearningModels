@@ -7,8 +7,58 @@ import numpy as np
 import theano
 import theano.tensor as T
 from sklearn import datasets
+import gzip
+import cPickle
 
 
+if __name__ == '__main__':
+    f = gzip.open('mnist.pkl.gz', 'rb')
+    train_set, valid_set, test_set = cPickle.load(f)
+    trainx = train_set[0]
+    trainy = train_set[1]
+    trainy = trainy.astype(int)
+    validx = valid_set[0]
+    validy = valid_set[1]
+    validy = validy.astype(int)
+    X = T.matrix('x',dtype=theano.config.floatX)  # @UndefinedVariable
+    Y = T.ivector('y')
+    
+    logi = FNN.FNN(X,[500], 784, 10)
+    
+    cost = logi.negative_log_likelihood(Y)
+    
+    grads = T.grad(cost,logi.params)
+    
+    alpha = 0.0091
+    
+    #!!!!!!!!!!!
+    updates = [(param, param - alpha * grad) for param,grad in zip(logi.params, grads)]
+    
+    train = theano.function([X,Y], logi.negative_log_likelihood(Y), updates=updates)
+    
+    #input must be wrapped by []
+    pred = theano.function([X],outputs=logi.y_pred)
+    
+    
+    error = theano.function([X,Y],outputs=logi.error(Y))
+    
+    epoch = 500
+    
+    
+    for i in range(epoch):
+        print 'epoch:',i
+        print 'neg log likelihood:',train(trainx,trainy)
+        print 'mean error:',error(validx,validy)
+        if i %10 == 0:
+            print pred(validx[-30:])
+            print validy[-30:]
+       # print np.array(pred(testx)).round().astype(int),testy
+        #print logi.W.get_value()
+        #print logi.b.get_value()
+    #print pred(testx)
+    #print testy
+
+'''
 if __name__ == '__main__':
     x,y = datasets.make_moons(500, noise=0.21)
     y = y.astype(int)
@@ -58,7 +108,7 @@ if __name__ == '__main__':
     
     dataset.plot_data(x, y,[[x[:,0].min(), x[:,0].max()],[x[:,1].min(), x[:,1].max()]],(xx,yy,Z))
     
-
+'''
 
 '''
 if __name__ == '__main__':
