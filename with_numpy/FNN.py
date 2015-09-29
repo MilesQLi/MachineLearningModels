@@ -6,13 +6,13 @@ class FNN(object):
         self.Ws = []
         self.bs = []
         self.Ws.append(np.random.uniform(size = (n_input, n_neurons[0])))
-        self.bs.append(np.random.uniform(size = (1,n_neurons[0])))
+        self.bs.append(np.random.uniform(size = (n_neurons[0],)))
         
         for i in range(1, len(n_neurons)):
             self.Ws.append(np.random.uniform(size = (n_neurons[i-1], n_neurons[i])))
-            self.bs.append(np.random.uniform(size = (1,n_neurons[i])))
+            self.bs.append(np.random.uniform(size = (n_neurons[i],)))
         self.Ws.append(np.random.uniform(size = (n_neurons[len(n_neurons)-1], n_ouput)))
-        self.bs.append(np.random.uniform(size = (1,n_ouput)))
+        self.bs.append(np.random.uniform(size = (n_ouput,)))
     
     def sigmoid(self,x):
         return 1 / (1 + np.exp(-x))
@@ -87,7 +87,7 @@ class FNN(object):
         #print 'db1:',dbs[1]
         #print 'db2:',dbs[2]
         for i in range(len(self.Ws)):
-            self. Ws[i] -= alpha *dWs[i]
+            self. Ws[i] = self. Ws[i] - alpha *dWs[i]
             #print self. bs[i].shape,dbs[i].shape
-            self. bs[i] -= alpha *dbs[i]
+            self. bs[i] = self. bs[i] - alpha *dbs[i]
     
