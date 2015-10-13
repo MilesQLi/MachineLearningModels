@@ -151,7 +151,7 @@ class rbm(object):
         #TODO try size=(1, n_visible)
         self.bvis = theano.shared(np.zeros((n_visible, )) , name = 'bvis')
         self.bhid = theano.shared(np.zeros((n_hidden, )) , name = 'bhid')
-        self.params = [self.bvis, self.bvis, self.bhid]
+        self.params = [self.w, self.bvis, self.bhid]
         self.theano_rng = RandomStreams()
     
     def free_energy(self, v_sample):
@@ -511,9 +511,17 @@ def test_rbm(learning_rate=0.1, training_epochs=1,
     # create a space to store the image for plotting ( we need to leave
     # room for the tile_spacing as well)
     image_data = numpy.zeros(
-        (29 * n_samples + 1, 29 * n_chains - 1),
+        (29 * (n_samples + 1) + 1, 29 * n_chains - 1),
         dtype='uint8'
     )
+    
+    image_data[0:28, :] = tile_raster_images(
+            X=persistent_vis_chain.get_value(borrow=True),
+            img_shape=(28, 28),
+            tile_shape=(1, n_chains),
+            tile_spacing=(1, 1))
+    
+    
     for idx in xrange(n_samples):
         # generate `plot_every` intermediate samples that we discard,
         # because successive samples in the chain are too correlated
