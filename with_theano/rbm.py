@@ -10,6 +10,7 @@ import sys
 import time
 import os
 from theano.tensor.shared_randomstreams import RandomStreams
+import matplotlib.pylab as plt
 import PIL.Image as Image
 def scale_to_unit_interval(ndar, eps=1e-8):
     """ Scales all values in the ndarray ndar to be between 0 and 1 """
@@ -142,18 +143,29 @@ class rbm(object):
         self.input = input
         self.n_visible = n_visible
         self.n_hidden = n_hidden
-        self.w = theano.shared(np.random.uniform(size=(n_visible, n_hidden)) , name = 'w')
+        self.w = theano.shared(np.random.uniform(
+                    low=-4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    high=4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    size=(n_visible, n_hidden)
+                ) , name = 'w')
         #TODO try size=(1, n_visible)
-        self.bvis = theano.shared(np.random.uniform(size=(n_visible, )) , name = 'bvis')
-        self.bhid = theano.shared(np.random.uniform(size=(n_hidden, )) , name = 'bhid')
+        self.bvis = theano.shared(np.zeros((n_visible, )) , name = 'bvis')
+        self.bhid = theano.shared(np.zeros((n_hidden, )) , name = 'bhid')
         self.params = [self.bvis, self.bvis, self.bhid]
         self.theano_rng = RandomStreams()
-        
+    
+    def free_energy(self, v_sample):
+        wx_b = T.dot(v_sample, self.w) + self.bhid
+        vbias_term = T.dot(v_sample, self.bvis)
+        hidden_term = T.sum(T.log(1 + T.exp(wx_b)), axis=1)
+        return -hidden_term - vbias_term
+    
+    '''    
     def free_energy(self, x):
         vbias_term = T.dot(x, self.bvis)
         wx_b = self.bhid + T.dot(x,self.w)
         return - vbias_term - T.sum(T.log(1 + T.exp(wx_b)), axis = 1)
-    
+    '''
     def propup(self, x):
         z = T.dot(x, self.w)+self.bhid
         return (z,T.nnet.sigmoid(z))
@@ -262,7 +274,7 @@ class rbm(object):
             monitoring_cost = self.get_reconstruction_cost(updates,
                                                            pre_sigmoid_nvs[-1])
 
-        return monitoring_cost, updates
+        return monitoring_cost, updates,cost
         # end-snippet-4
 
     def get_pseudo_likelihood_cost(self, updates):
@@ -335,7 +347,7 @@ class rbm(object):
         return cross_entropy
 
 
-def test_rbm(learning_rate=0.1, training_epochs=15,
+def test_rbm(learning_rate=0.1, training_epochs=1,
              dataset='mnist.pkl.gz', batch_size=20,
              n_chains=20, n_samples=10, output_folder='rbm_plots',
              n_hidden=500):
@@ -362,9 +374,9 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
 
     train_set_x = theano.shared(numpy.asarray(train_set[0],dtype=theano.config.floatX),borrow=True)
     train_set_y = theano.shared(numpy.asarray(train_set[1],dtype=theano.config.floatX),borrow=True)
-    test_set_x = theano.shared(numpy.asarray(valid_set[0],dtype=theano.config.floatX),borrow=True)
+    test_set_x = theano.shared(numpy.asarray(test_set[0],dtype=theano.config.floatX),borrow=True)
     test_set_y = theano.shared(numpy.asarray(
-                                             valid_set[1],dtype=theano.config.floatX),borrow=True)
+                                             test_set[1],dtype=theano.config.floatX),borrow=True)
 
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0] / batch_size
@@ -387,7 +399,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
     rbma = rbm(x, n_visible=28 * 28, n_hidden=n_hidden)
 
     # get the cost and the gradient corresponding to one step of CD-15
-    cost, updates = rbma.get_cost_updates(lr=learning_rate, persistent=persistent_chain, k=15)
+    cost, updates,cost2 = rbma.get_cost_updates(lr=learning_rate, persistent=persistent_chain, k=15)
 
     #################################
     #     Training the RBM          #
@@ -401,7 +413,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
     # the purpose of train_rbm is solely to update the RBM parameters
     train_rbm = theano.function(
         [index],
-        cost,
+        [cost,cost2],
         updates=updates,
         givens={
             x: train_set_x[index * batch_size: (index + 1) * batch_size]
@@ -417,9 +429,10 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
 
         # go through the training set
         mean_cost = []
-        for batch_index in xrange(n_train_batches / 100):
-            print '   index',batch_index,'/',n_train_batches,'\r',
-            mean_cost += [train_rbm(batch_index)]
+        for batch_index in xrange(n_train_batches / 2):
+            c1,c2 = train_rbm(batch_index)
+            mean_cost += [c1]
+            print '   index',batch_index,'/',n_train_batches,' cost:',numpy.mean(mean_cost),' cost2:',c2,'\r',
 
         print 'Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost)
 
@@ -428,7 +441,7 @@ def test_rbm(learning_rate=0.1, training_epochs=15,
         # Construct image from the weight matrix
         image = Image.fromarray(
             tile_raster_images(
-                X=rbm.w.get_value(borrow=True).T,
+                X=rbma.w.get_value(borrow=True).T,
                 img_shape=(28, 28),
                 tile_shape=(10, 10),
                 tile_spacing=(1, 1)

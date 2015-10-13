@@ -76,12 +76,19 @@ sentiment:
 '''
 image:
 
-minist:
+mnist:
     f = gzip.open('mnist.pkl.gz', 'rb')
     train_set, valid_set, test_set = cPickle.load(f)
     train_x = train_set[0]
     train_y = train_set[1]
+
+sklearn_digits:
+digits = datasets.load_digits()
+digits.data is (1797L, 64L)  data  digits.images is 1797 (8*8) array. digits.target is the corresponding classes
+digits can also be used like dict
 _______________________________ 
+
+
 
 
 '''
