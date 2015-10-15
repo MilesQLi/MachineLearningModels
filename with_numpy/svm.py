@@ -12,16 +12,29 @@ class svm(object):
     def calcE(self,i):
         self.e[i] = 0
         for j in range(self.n):
-            self.e[i] += self.alpha[j]*self.y[j]*self.k[i][j] + self.b
-        self.e[i] -= self.y[j]
+            self.e[i] += self.alpha[j]*self.y[j]*self.k[i][j]
+        self.e[i] = self.e[i] + self.b - self.y[i]
+        #print 'ei',self.e[i]
+            
     def KKT(self,i):
-        if self.alpha[i] == 0:
+        if self.alpha[i] <= self.epi:
+            #if -self.y[i]*self.e[i] - self.epi>0:
+                #print 'kkt:',-self.y[i]*self.e[i] - self.epi
             return max(-self.y[i]*self.e[i] - self.epi, 0)
-        if self.alpha[i] > 0 and self.alpha[i] < self.C:
+        if self.alpha[i] > 0. and self.alpha[i] < self.C:
             return np.abs(-self.y[i]*self.e[i] - self.epi)
-        if self.alpha[i] == self.C:
+        if self.alpha[i] >= self.C-self.epi:
+            #if self.y[i]*self.e[i] - self.epi>0:
+                #print 'kkt3:',self.y[i]*self.e[i] - self.epi
             return max(self.y[i]*self.e[i] - self.epi, 0)
-    
+    '''
+    def KKT(self,i):
+        if ((self.y[i]*self.e[i]<-self.epi) and (self.alpha[i]<self.C)) or \
+        (((self.y[i]*self.e[i]>self.epi)) and (self.alpha[i]>0)):
+            return 10
+        return 0  
+    '''          
+            
     def chooseA2(self,a1):
         maxi = -1
         maxi_i = -1
@@ -31,11 +44,12 @@ class svm(object):
             if temp > maxi:
                 maxi = temp
                 maxi_i = i
+        #print 'maxi,',maxi
         return maxi_i
     
     def updateAlpha(self,a1):
         a2 = self.chooseA2(a1)
-        print 'a1:',a1,'a2',a2
+        #print 'a1:',a1,'a2',a2
         if self.y[a1] == self.y[a2]:
             l = max(0,self.alpha[a2]+self.alpha[a1]-self.C)
             h = min(self.C,self.alpha[a2]+self.alpha[a1])
@@ -45,7 +59,7 @@ class svm(object):
         alpha2_old =  self.alpha[a2]
         alpha1_old =  self.alpha[a1]     
         self.alpha[a2] += self.y[a2] * (self.e[a1] - self.e[a2]) / (self.k[a1][a1]+self.k[a2][a2]+2*self.k[a1][a2])
-        print 'alpha2:',self.alpha[a2]
+        #print 'alpha2:',self.alpha[a2]
         self.alpha[a2] = min(self.alpha[a2],h)
         self.alpha[a2] = max(self.alpha[a2],l)
         self.alpha[a1] += self.y[a1]*self.y[a2]*(alpha2_old-self.alpha[a2])
@@ -73,7 +87,7 @@ class svm(object):
             for j in range(i,self.n):
                 self.k[i][j] = self.kernel(x[i],x[j])
                 self.k[j][i] = self.k[i][j]
-        print self.k
+        #print self.k
         for i in range(self.n):
             self.calcE(i)
         for i in range(iter):
@@ -87,13 +101,13 @@ class svm(object):
                 if temp > maxi:
                     maxi = temp
                     maxi_i = j
-                if maxi > 0:
+                if maxi > 0.01:
                     self.updateAlpha(maxi_i)
                     flag = True
             if not flag:
                 for j in range(self.n):
                     temp = self.KKT(j) 
-                    if temp > 0:
+                    if temp > 0.01:
                        #print 'temp',temp
                        self.updateAlpha(j)  
                        break 
@@ -103,11 +117,14 @@ class svm(object):
                 self.sv.append(i)
     def predict(self,x):
         out = np.zeros(x.shape[0])
-        for i in range(self.n):
-            out += self.alpha[i]*self.y[i]*self.kernel(self.x[i],x)
+        #print x
+        for j in range(x.shape[0]):
+            for i in range(self.n):
+                out[j] += self.alpha[i]*self.y[i]*self.kernel(self.x[i],x[j])
         out += self.b
-        print self.alpha
-        print self.e
+        #print out
+        #print self.alpha
+        #print 'e',self.e
         #print self.y
         out2 = np.zeros(x.shape[0])
         out2[out>0] = 1
@@ -130,8 +147,16 @@ if __name__ == '__main__':
     for i in range(len(y)):
         if y[i] == 0:
             y[i] = -1
-    svm = svm(10,linear)
+    svm = svm(10,Gauss_kernel)
     svm.train(X,y,1000)
-    #print svm.predict(X)
-    plt.scatter(X[:,0],X[:,1], s=75, c=svm.predict(X), alpha=.5)    
+    print svm.error(X,y)
+    xx, yy = np.meshgrid(np.arange(X[:,0].min()-0.3, X[:,0].max()+0.3, 0.3),
+                     np.arange(X[:,1].min()-0.3, X[:,0].max()+0.3, 0.3))
+    Z = []
+    x_t = np.c_[xx.ravel(), yy.ravel()]  
+    Z = svm.predict(x_t)
+    Z = np.array(Z).reshape(xx.shape)
+    cm = plt.cm.RdBu
+    #plt.contourf(xx, yy, Z, cmap=cm, alpha=.2)
+    plt.scatter(X[:,0],X[:,1], s=75, c=svm.predict(X), alpha=.5)  
     plt.show()   
