@@ -78,18 +78,17 @@ class svm(object):
         print 'sum alpha*y:%f'%temp
         num = 0
         for i in range(self.n):
-            if self.alpha[i]>0 and self.e[i]*self.y[i]>0.01:
+            if self.alpha[i]>0 and self.e[i]*self.y[i]>self.epi:
                 num += 1
                 print 'alpha_',i,':',self.alpha[i],'y*e_i',self.e[i]*self.y[i]
-            if self.alpha[i]==0 and self.e[i]*self.y[i]<0.:
+            if self.alpha[i]==0 and self.e[i]*self.y[i]<-self.epi:
                 num += 1
                 print 'alpha_',i,':',self.alpha[i],'y*e_i',self.e[i]*self.y[i]
-            if self.alpha[i]>self.C-self.epi and self.e[i]*self.y[i]>0.:
+            if self.alpha[i]>self.C-self.epi and self.e[i]*self.y[i]>-self.epi:
                 num += 1
                 print 'alpha_',i,':',self.alpha[i],'y*e_i',self.e[i]*self.y[i]
         print 'break num:',num
                 
-        
         
     def train(self,x,y,iter = 100):
         self.n = x.shape[0]
@@ -188,12 +187,13 @@ def Polynomial(x,z,p=3):
         
 if __name__ == '__main__':
     
-    X,y = datasets.make_moons(100,noise=0.01)
+    #X,y = datasets.make_moons(100,noise=0.01)
+    X,y = datasets.make_circles(100,noise=0.01)
     for i in range(len(y)):
         if y[i] == 0:
             y[i] = -1
     svm = svm(10, Gauss_kernel)
-    svm.train(X,y,2000)
+    svm.train(X,y,1000)
     print svm.error(X,y)
     xx, yy = np.meshgrid(np.arange(X[:,0].min()-0.3, X[:,0].max()+0.3, 0.3),
                      np.arange(X[:,1].min()-0.3, X[:,0].max()+0.3, 0.3))
