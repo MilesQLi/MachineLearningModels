@@ -33,6 +33,7 @@ class svm(object):
         maxi_i = -1
         #TODO　set threshold
         for i in range(self.n):
+            self.calcE(i)
             #temp = np.abs((self.e[a1] - self.e[i]) / (self.k[a1][a1]+self.k[i][i]-2*self.k[a1][i]))
             temp = np.abs(self.e[a1] - self.e[i])
             if temp > maxi:
@@ -112,6 +113,7 @@ class svm(object):
             maxi = -1
             ran = np.nonzero(self.alpha)[0]
             for j in ran:
+                self.calcE(j)
                 if self.alpha[j] > self.C-self.epi:
                     continue
                 temp = self.KKT(j)
@@ -130,6 +132,7 @@ class svm(object):
                 maxi_list = []
                 print 'not flag'
                 for j in range(self.n):
+                    self.calcE(j)
                     temp = self.KKT(j) 
                     if temp > maxi + self.epi:
                         maxi = temp
