@@ -34,7 +34,7 @@ class svm(object):
         #TODO　set threshold
         for i in range(self.n):
             self.calcE(i)
-            #temp = np.abs((self.e[a1] - self.e[i]) / (self.k[a1][a1]+self.k[i][i]-2*self.k[a1][i]))
+            #use this doesn't work temp = np.abs((self.e[a1] - self.e[i]) / (self.k[a1][a1]+self.k[i][i]-2*self.k[a1][i]))
             temp = np.abs(self.e[a1] - self.e[i])
             if temp > maxi:
                 maxi = temp
@@ -97,6 +97,8 @@ class svm(object):
         self.e = np.zeros((self.n,),dtype = float)
         self.x = x
         self.y = y
+        self.uptimes = np.zeros((self.n,),dtype = int)
+        self.total_time = 0
         self.k = np.zeros((self.n,self.n),dtype = float)
         for i in range(self.n):
             for j in range(i,self.n):
@@ -117,15 +119,18 @@ class svm(object):
                 if self.alpha[j] > self.C-self.epi:
                     continue
                 temp = self.KKT(j)
-                if temp > maxi + self.epi:
+                if temp > maxi + self.epi and self.uptimes[j]<=1.3*(self.total_time)/self.n:
                     maxi_list = []
                     maxi_list.append(j)
                     maxi = temp
-                if np.abs(temp - maxi) < self.epi:
+                elif np.abs(temp - maxi) < self.epi and self.uptimes[j]<=1.3*(self.total_time)/self.n:
                     maxi_list.append(j)
             if maxi > 0.01:
                 print 'maxi_list:',maxi_list
-                self.updateAlpha(maxi_list[np.random.randint(0,len(maxi_list))])
+                self.total_time += 1
+                tmp = np.random.randint(0,len(maxi_list))
+                self.uptimes[maxi_list[tmp]] += 1
+                self.updateAlpha(maxi_list[tmp])
                 flag = True
             maxi = -1
             if not flag:
@@ -134,16 +139,19 @@ class svm(object):
                 for j in range(self.n):
                     self.calcE(j)
                     temp = self.KKT(j) 
-                    if temp > maxi + self.epi:
+                    if temp > maxi + self.epi and self.uptimes[j]<=1.3*(self.total_time)/self.n:
                         maxi = temp
                         maxi_list = []
                         maxi_list.append(j)
-                       #print 'temp',temp
-                    if np.abs(temp - maxi) < self.epi:
-                         maxi_list.append(j)
+                        #print 'temp',temp
+                    elif np.abs(temp - maxi) < self.epi and self.uptimes[j]<=1.3*(self.total_time)/self.n:
+                        maxi_list.append(j)
                 #print 'maxi:',maxi,'maxi_i:',maxi_i,' ',self.KKT(maxi_i)
                 print 'maxi_list:',maxi_list
-                self.updateAlpha(maxi_list[np.random.randint(0,len(maxi_list))])  
+                self.total_time += 1
+                tmp = np.random.randint(0,len(maxi_list))
+                self.uptimes[maxi_list[tmp]] += 1
+                self.updateAlpha(maxi_list[tmp]) 
         self.sv = []
         for i in range(self.n):
             if self.alpha[i] > 0:
@@ -185,7 +193,7 @@ if __name__ == '__main__':
         if y[i] == 0:
             y[i] = -1
     svm = svm(10, Gauss_kernel)
-    svm.train(X,y,1000)
+    svm.train(X,y,2000)
     print svm.error(X,y)
     xx, yy = np.meshgrid(np.arange(X[:,0].min()-0.3, X[:,0].max()+0.3, 0.3),
                      np.arange(X[:,1].min()-0.3, X[:,0].max()+0.3, 0.3))
@@ -197,3 +205,4 @@ if __name__ == '__main__':
     plt.contourf(xx, yy, Z, cmap=cm, alpha=.2)
     plt.scatter(X[:,0],X[:,1], s=75, c=svm.predict(X), alpha=.5)  
     plt.show()   
+    print svm.uptimes
