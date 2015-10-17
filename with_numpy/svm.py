@@ -349,7 +349,7 @@ if __name__ == '__main__':
     for i in range(len(y)):
         if y[i] == 0:
             y[i] = -1
-    svm = svm(X[:100],y[:100],10, Gauss_kernel,0.1)
+    svm = svm(X[:100],y[:100],10, Gauss_kernel,0.0000001)
     t1 = time.clock()
     svm.train(1000)
     print 'train time:',time.clock() - t1
