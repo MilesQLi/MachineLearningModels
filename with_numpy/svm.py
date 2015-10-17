@@ -2,31 +2,47 @@
 import numpy as np
 from sklearn import datasets
 import matplotlib.pyplot as plt
+import gzip
+import cPickle
 class svm(object):
-    def __init__(self,C,kernel,epi=0.01):
+    def __init__(self,x,y,C,kernel,epi=0.01):
         self.C = C
         self.epi = epi
         self.kernel = kernel
         self.b = 0
-        
+        self.n = x.shape[0]
+        print 'n:',self.n
+        self.alpha = np.zeros((self.n,),dtype = float)
+        self.e = np.zeros((self.n,),dtype = float)
+        self.x = x
+        self.y = y
+        self.uptimes = np.zeros((self.n,),dtype = int)
+        self.total_time = 0
+        try:
+            self.k = np.zeros((self.n,self.n),dtype = float)
+            self.cached = True
+            for i in range(self.n):
+                for j in range(i,self.n):
+                    self.k[i][j] = self.kernel(x[i],x[j])
+                    self.k[j][i] = self.k[i][j]
+        except BaseException:
+            self.cached = False
+            
+        #print self.k
+        '''
+        for i in range(self.n):
+            self.calcE(i)
+        '''
     def calcE(self,i):
         temp = 0
         for j in range(self.n):
-            temp += self.alpha[j]*self.y[j]*self.k[i][j]
+            if self.cached:
+                temp += self.alpha[j]*self.y[j]*self.k[i][j]
+            else:
+                temp += self.alpha[j]*self.y[j]*self.kernel(i,j)
         self.e[i] = temp + self.b - self.y[i]
         #print 'ei',self.e[i]
             
-    def KKT(self,i):
-        if self.alpha[i] <= self.epi:
-            #if -self.y[i]*self.e[i] - self.epi>0:
-                #print 'kkt:',-self.y[i]*self.e[i] - self.epi
-            return max(-self.y[i]*self.e[i] - self.epi, 0)
-        if self.alpha[i] > 0. and self.alpha[i] < self.C:
-            return np.abs(-self.y[i]*self.e[i] - self.epi)
-        if self.alpha[i] >= self.C-self.epi:
-            #if self.y[i]*self.e[i] - self.epi>0:
-                #print 'kkt3:',self.y[i]*self.e[i] - self.epi
-            return max(self.y[i]*self.e[i] - self.epi, 0)
             
     def chooseA2(self,a1):
         maxi = -1
@@ -39,7 +55,7 @@ class svm(object):
             if temp > maxi:
                 maxi = temp
                 maxi_i = i
-        #print 'maxi,',maxi
+        print 'maxi,',maxi
         return maxi_i
     
     def updateAlpha(self,a1):
@@ -52,15 +68,23 @@ class svm(object):
             h = min(self.C,self.alpha[a2]-self.alpha[a1]+self.C) 
         alpha2_old =  self.alpha[a2]
         alpha1_old =  self.alpha[a1]     
-        self.alpha[a2] += self.y[a2] * (self.e[a1] - self.e[a2]) / (self.k[a1][a1]+self.k[a2][a2]-2*self.k[a1][a2])
+        if self.cached:
+            self.alpha[a2] += self.y[a2] * (self.e[a1] - self.e[a2]) / (self.k[a1][a1]+self.k[a2][a2]-2*self.k[a1][a2])
+        else:
+            self.alpha[a2] += self.y[a2] * (self.e[a1] - self.e[a2]) / (self.kernel(a1,a1)+self.self.kernel(a2,a2)-2*self.self.kernel(a1,a2))
         calc = self.alpha[a2]
         #print 'alpha2:',self.alpha[a2]
         self.alpha[a2] = min(self.alpha[a2],h)
         self.alpha[a2] = max(self.alpha[a2],l)
         self.alpha[a1] += self.y[a1]*self.y[a2]*(alpha2_old-self.alpha[a2])
         #print 'a1:',a1,' ', self.alpha[a1],' ',alpha1_old,'a2:',a2,' ',self.alpha[a2],' ',alpha2_old,' ',calc
-        b1 = -self.e[a1] - self.y[a1]*self.k[a1][a1]*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.k[a2][a1]*(self.alpha[a2]-alpha2_old)+self.b
-        b2 = -self.e[a2] - self.y[a1]*self.k[a1][a2]*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.k[a2][a2]*(self.alpha[a2]-alpha2_old)+self.b
+        if self.cached:
+            b1 = -self.e[a1] - self.y[a1]*self.k[a1][a1]*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.k[a2][a1]*(self.alpha[a2]-alpha2_old)+self.b
+            b2 = -self.e[a2] - self.y[a1]*self.k[a1][a2]*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.k[a2][a2]*(self.alpha[a2]-alpha2_old)+self.b
+        else:
+            b1 = -self.e[a1] - self.y[a1]*self.kernel(a1,a1)*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.kernel(a2,a1)*(self.alpha[a2]-alpha2_old)+self.b
+            b2 = -self.e[a2] - self.y[a1]*self.kernel(a1,a2)*(self.alpha[a1]-alpha1_old)-self.y[a2]*self.kernel(a2,a2)*(self.alpha[a2]-alpha2_old)+self.b
+            
         if self.alpha[a1] > 0 and self.alpha[a1] < self.C:
             self.b = b1
         elif self.alpha[a2] > 0 and self.alpha[a2] < self.C:
@@ -95,30 +119,68 @@ class svm(object):
                 print '3alpha_',i,':',self.alpha[i],'y*e_i',self.e[i]*self.y[i]
         print 'break num:',num
         return flag
-                
-        
-    def train(self,x,y,iter = 100):
-        self.n = x.shape[0]
-        self.alpha = np.zeros((self.n,),dtype = float)
-        self.e = np.zeros((self.n,),dtype = float)
-        self.x = x
-        self.y = y
-        self.uptimes = np.zeros((self.n,),dtype = int)
-        self.total_time = 0
-        self.k = np.zeros((self.n,self.n),dtype = float)
-        for i in range(self.n):
-            for j in range(i,self.n):
-                self.k[i][j] = self.kernel(x[i],x[j])
-                self.k[j][i] = self.k[i][j]
-        #print self.k
-        for i in range(self.n):
-            self.calcE(i)
+
+    '''
+    def KKT(self,i):
+        if ((self.y[i]*self.e[i]<-self.epi) and (self.alpha[i]<self.C)) or \
+        (((self.y[i]*self.e[i]>self.epi)) and (self.alpha[i]>0)):
+            return False
+        return True    
+    def train(self,iter = 100):
         old = -1
         test_p = iter / 10
-        for i in range(iter):
-            if i % test_p == 0:
-                if(self.print_kkt()):
-                    break
+        for i in range(1,iter+1):
+            flag = False
+            #if i % test_p == 0:
+            #    if(self.print_kkt()):
+            #        break
+            maxi_list = []
+            print 'iter:',i
+            flag = False
+            maxi = -1
+            ran = np.nonzero(self.alpha)[0]
+            print 'i:'
+            for j in ran:
+                self.calcE(j)
+                if self.alpha[j] > self.C-self.epi:
+                    continue
+                if self.KKT(j):
+                    print j,' ',
+                    self.updateAlpha(j)
+                    flag = True
+            if not flag:
+                print 'i not flag:',self.n
+                for j in range(self.n):
+                    self.calcE(j)
+                    if self.KKT(j):
+                        print j,' ',
+                        self.updateAlpha(j) 
+        self.sv = []
+        for i in range(self.n):
+            if self.alpha[i] > 0:
+                self.sv.append(i)
+                plt.plot(self.x[i][0],self.x[i][1],'oy')
+        self.print_kkt()
+                
+    '''    
+    def KKT(self,i):
+        if self.alpha[i] <= self.epi:
+            #if -self.y[i]*self.e[i] - self.epi>0:
+                #print 'kkt:',-self.y[i]*self.e[i] - self.epi
+            return max(-self.y[i]*self.e[i] - self.epi, 0)
+        if self.alpha[i] > 0. and self.alpha[i] < self.C:
+            return np.abs(-self.y[i]*self.e[i] - self.epi)
+        if self.alpha[i] >= self.C-self.epi:
+            #if self.y[i]*self.e[i] - self.epi>0:
+                #print 'kkt3:',self.y[i]*self.e[i] - self.epi
+            return max(self.y[i]*self.e[i] - self.epi, 0)
+    def train(self,iter = 100):
+        old = -1
+        test_p = iter / 10
+        for i in range(1,iter+1):
+            #if i % test_p == 0:
+            #    if(self.print_kkt()):
+            #        break
             maxi_list = []
             print 'iter:',i
             flag = False
@@ -168,6 +230,7 @@ class svm(object):
                 self.sv.append(i)
                 plt.plot(self.x[i][0],self.x[i][1],'oy')
         self.print_kkt()
+     
     def predict(self,x):
         out = np.zeros(x.shape[0])
         #print x
@@ -196,16 +259,65 @@ def linear(x,z):
 
 def Polynomial(x,z,p=3):  
     return np.sum((x*z + 1)**p)
-        
+
+
+'''
+if __name__ == '__main__':
+    digits = datasets.load_digits()
+    train_x = digits.data[:-200]
+    train_y = digits.target[:-200]
+    valid_x = digits.data[-200:-100]
+    valid_y = digits.target[-200:-100]
+    test_x = digits.data[-100:]
+    test_y = digits.target[-100:]
+    svm = svm(train_x,train_y,10, Gauss_kernel,0.001)
+    error = 1.
+    svm.train(10)
+    error = svm.error(valid_x,valid_y)
+    for i in range(100):
+        svm.train(10)
+        temp = svm.error(valid_x,valid_y)
+        print 'i:',i,' valid error:',temp
+        if temp > error:
+            break
+        else:
+            error = temp
+    print 'test error:',svm.error(test_x, test_y)
+'''
+'''
+if __name__ == '__main__':
+    f = gzip.open('mnist.pkl.gz', 'rb')
+    train_set, valid_set, test_set = cPickle.load(f)
+    train_x = train_set[0]
+    train_y = train_set[1]
+    valid_x = valid_set[0]
+    valid_y = valid_set[1]
+    test_x = test_set[0]
+    test_y = test_set[1]
+    svm = svm(train_x,train_y,10, Gauss_kernel,0.001)
+    error = 1.
+    svm.train(100)
+    error = svm.error(valid_x,valid_y)
+    for i in range(100):
+        svm.train(10)
+        temp = svm.error(valid_x,valid_y)
+        print 'i:',i,' valid error:',temp
+        if temp > error:
+            break
+        else:
+            error = temp
+    print 'test error:',svm.error(test_x, test_y)
+'''
+       
 if __name__ == '__main__':
     
-    X,y = datasets.make_moons(100,noise=0.01)
-    #X,y = datasets.make_circles(100,noise=0.01)
+    #X,y = datasets.make_moons(100,noise=0.01)
+    X,y = datasets.make_circles(100,noise=0.01)
     for i in range(len(y)):
         if y[i] == 0:
             y[i] = -1
-    svm = svm(10, Polynomial,0.01)
-    svm.train(X,y,1000)
+    svm = svm(X,y,10, Gauss_kernel,0.051)
+    svm.train(100)
     print 'error rate:', svm.error(X,y)
     xx, yy = np.meshgrid(np.arange(X[:,0].min()-0.3, X[:,0].max()+0.3, 0.3),
                      np.arange(X[:,1].min()-0.3, X[:,0].max()+0.3, 0.3))
