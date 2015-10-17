@@ -4,6 +4,7 @@ from sklearn import datasets
 import matplotlib.pyplot as plt
 import gzip
 import cPickle
+import time
 class svm(object):
     def __init__(self,x,y,C,kernel,epi=0.01):
         self.C = C
@@ -55,7 +56,7 @@ class svm(object):
             if temp > maxi:
                 maxi = temp
                 maxi_i = i
-        print 'maxi,',maxi
+        #print 'maxi,',maxi
         return maxi_i
     
     def updateAlpha(self,a1):
@@ -229,7 +230,7 @@ class svm(object):
             if self.alpha[i] > 0:
                 self.sv.append(i)
                 plt.plot(self.x[i][0],self.x[i][1],'oy')
-        self.print_kkt()
+        #self.print_kkt()
      
     def predict(self,x):
         out = np.zeros(x.shape[0])
@@ -259,6 +260,25 @@ def linear(x,z):
 
 def Polynomial(x,z,p=3):  
     return np.sum((x*z + 1)**p)
+
+if __name__ == '__main__':
+    x,y = datasets.make_classification(n_samples = 1000, n_redundant = 0,n_informative=6,n_clusters_per_class = 1, n_features = 10,n_classes = 2)
+    y[y==0] = -1
+    train_x = x[:-100]
+    train_y = y[:-100]
+    valid_x = x[-100:]
+    valid_y = y[-100:]
+    test_x = x[-100:]
+    test_y = y[-100:]
+    svm = svm(train_x,train_y,10, Gauss_kernel,0.1)
+    error = 1.
+    svm.train(10)
+    error = svm.error(valid_x,valid_y)
+    for i in range(10):
+        svm.train(10)
+        temp = svm.error(valid_x,valid_y)
+        print 'i:',i,' valid error:',temp
+    print 'test error:',svm.error(test_x, test_y),svm.error(train_x, train_y)
 
 
 '''
@@ -308,16 +328,18 @@ if __name__ == '__main__':
             error = temp
     print 'test error:',svm.error(test_x, test_y)
 '''
-       
+'''    
 if __name__ == '__main__':
     
-    #X,y = datasets.make_moons(100,noise=0.01)
-    X,y = datasets.make_circles(100,noise=0.01)
+    X,y = datasets.make_moons(150,noise=0.01)
+    #X,y = datasets.make_circles(100,noise=0.01)
     for i in range(len(y)):
         if y[i] == 0:
             y[i] = -1
-    svm = svm(X,y,10, Gauss_kernel,0.051)
-    svm.train(100)
+    svm = svm(X[:100],y[:100],10, Gauss_kernel,0.1)
+    t1 = time.clock()
+    svm.train(1000)
+    print 'train time:',time.clock() - t1
     print 'error rate:', svm.error(X,y)
     xx, yy = np.meshgrid(np.arange(X[:,0].min()-0.3, X[:,0].max()+0.3, 0.3),
                      np.arange(X[:,1].min()-0.3, X[:,0].max()+0.3, 0.3))
@@ -329,4 +351,5 @@ if __name__ == '__main__':
     plt.contourf(xx, yy, Z, cmap=cm, alpha=.2)
     plt.scatter(X[:,0],X[:,1], s=75, c=svm.predict(X), alpha=.5)  
     plt.show()   
-    print svm.uptimes
+    print svm.error(X[-50:],y[-50:])
+'''
