@@ -12,7 +12,6 @@ class svm(object):
         self.kernel = kernel
         self.b = 0
         self.n = x.shape[0]
-        print 'n:',self.n
         self.alpha = np.zeros((self.n,),dtype = float)
         self.e = np.zeros((self.n,),dtype = float)
         self.x = x
@@ -94,6 +93,7 @@ class svm(object):
             self.b = (b1+b2)/2
         self.calcE(a1)
         self.calcE(a2)
+        return np.abs(self.alpha[a2]-alpha2_old)
     
     def print_kkt(self):
         print 'KKT:'
@@ -120,8 +120,6 @@ class svm(object):
                 print '3alpha_',i,':',self.alpha[i],'y*e_i',self.e[i]*self.y[i]
         print 'break num:',num
         return flag
-
-    '''
     def KKT(self,i):
         if ((self.y[i]*self.e[i]<-self.epi) and (self.alpha[i]<self.C)) or \
         (((self.y[i]*self.e[i]>self.epi)) and (self.alpha[i]>0)):
@@ -130,40 +128,54 @@ class svm(object):
     def train(self,iter = 100):
         old = -1
         test_p = iter / 10
+        flag = True
         for i in range(1,iter+1):
+            if flag == False:
+                break
             flag = False
             #if i % test_p == 0:
             #    if(self.print_kkt()):
             #        break
             maxi_list = []
-            print 'iter:',i
+            print 'iter:',i,' '
             flag = False
             maxi = -1
             ran = np.nonzero(self.alpha)[0]
-            print 'i:'
+            np.random.shuffle(ran)
+            #print 'i:'
             for j in ran:
                 self.calcE(j)
                 if self.alpha[j] > self.C-self.epi:
                     continue
-                if self.KKT(j):
-                    print j,' ',
-                    self.updateAlpha(j)
-                    flag = True
+                if not self.KKT(j):
+                    temp = self.updateAlpha(j)
+                    #print j,' ',temp
+                    if  temp > self.epi:
+                        flag = True
+                        print j
+                        break
             if not flag:
-                print 'i not flag:',self.n
-                for j in range(self.n):
+                seq = range(self.n)
+                np.random.shuffle(seq)
+                for j in seq:
                     self.calcE(j)
-                    if self.KKT(j):
-                        print j,' ',
-                        self.updateAlpha(j) 
+                    if not self.KKT(j):
+                        #print j,' ',
+                        temp = self.updateAlpha(j)
+                        #print j,' ',temp
+                        if  temp > self.epi:
+                            flag = True
+                            print j
+                            break
         self.sv = []
         for i in range(self.n):
             if self.alpha[i] > 0:
                 self.sv.append(i)
                 plt.plot(self.x[i][0],self.x[i][1],'oy')
-        self.print_kkt()
+        #self.print_kkt()
                 
     '''    
+    #bad method for long time and low accuracy
     def KKT(self,i):
         if self.alpha[i] <= self.epi:
             #if -self.y[i]*self.e[i] - self.epi>0:
@@ -231,7 +243,8 @@ class svm(object):
                 self.sv.append(i)
                 plt.plot(self.x[i][0],self.x[i][1],'oy')
         #self.print_kkt()
-     
+    '''
+    
     def predict(self,x):
         out = np.zeros(x.shape[0])
         #print x
@@ -260,7 +273,7 @@ def linear(x,z):
 
 def Polynomial(x,z,p=3):  
     return np.sum((x*z + 1)**p)
-
+'''
 if __name__ == '__main__':
     x,y = datasets.make_classification(n_samples = 1000, n_redundant = 0,n_informative=6,n_clusters_per_class = 1, n_features = 10,n_classes = 2)
     y[y==0] = -1
@@ -279,7 +292,7 @@ if __name__ == '__main__':
         temp = svm.error(valid_x,valid_y)
         print 'i:',i,' valid error:',temp
     print 'test error:',svm.error(test_x, test_y),svm.error(train_x, train_y)
-
+'''
 
 '''
 if __name__ == '__main__':
@@ -328,7 +341,7 @@ if __name__ == '__main__':
             error = temp
     print 'test error:',svm.error(test_x, test_y)
 '''
-'''    
+  
 if __name__ == '__main__':
     
     X,y = datasets.make_moons(150,noise=0.01)
@@ -352,4 +365,3 @@ if __name__ == '__main__':
     plt.scatter(X[:,0],X[:,1], s=75, c=svm.predict(X), alpha=.5)  
     plt.show()   
     print svm.error(X[-50:],y[-50:])
-'''
