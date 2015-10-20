@@ -1,1 +1,1 @@
-__all__=['logistic_softmax_regression','FNN','svm']
+__all__=['logistic_softmax_regression','FNN','svm','PCA']
