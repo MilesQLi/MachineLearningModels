@@ -5,7 +5,7 @@ from sklearn.datasets import fetch_olivetti_faces
 from numpy.random import RandomState
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
-
+import time
 class PCA(object):
     def __init__(self,n_component):
         self.n_component = n_component
@@ -15,14 +15,12 @@ class PCA(object):
         self.mean = np.average(X, axis = 1).reshape(X.shape[0],1)
         X_ = X - self.mean
         if m>n:
-            self.flag = True
-            self.U,self.S,self.V = svd(np.dot(X_.transpose(),X_))
+            U,S,V = svd(X_.transpose())
+            self.U = U
         else:
-            self.flag = False
-            self.U,self.S,self.V = svd(np.dot(X_,X_.transpose()))
-            self.U = np.dot(X_.transpose(),self.U)
-            self.U = self.U / np.sqrt(np.sum(self.U**2,axis = 0)) #normalize
-    
+            U,S,V = svd(X_)
+            self.U = V.transpose()
+            
     def transform(self,X):
         X_ = X - self.mean
         return np.dot(X_,self.U[:,:self.n_component])
@@ -80,10 +78,14 @@ if __name__ == '__main__':
     dataset = fetch_olivetti_faces(shuffle=True, random_state=rng)
     faces = dataset.data  
     plot_gallery('origin', faces[:6])
-    for i in range(45,50,5):    
+    tima  = 0
+    for i in range(5,50,5):    
         print 'n_comonents:',i
         pca = PCA(i)
+        t1 = time.clock()
         pca.train(faces)
+        tima += time.clock()-t1
         recon = pca.reconstruct(faces)
         plot_gallery('recon %d components'%i, recon[:6])
     plt.show()
+    print tima
