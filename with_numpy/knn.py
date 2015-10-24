@@ -8,7 +8,7 @@ from sklearn.datasets import load_iris
 import time
 
 class knn(object):
-    def __init__(self,k,dist = "Euclidean"):
+    def __init__(self,k,dist = "Euclidean",datax,datay):
         self.k = k
         if isinstance(dist,str):
             if hasattr(self,dist):
@@ -17,6 +17,8 @@ class knn(object):
                 print "Error: No that kind of distance function. Use Euclidean distance instead."
         else:
             self.dist = dist
+        self.datax = datax
+        self.datay = datay
     def Euclidean(x1,x2):
         return np.sqrt(np.sum((x1-x2)**2))
     def Manhattan(x1,x2):
