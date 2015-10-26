@@ -5,6 +5,7 @@ from sklearn.datasets import fetch_olivetti_faces
 from numpy.random import RandomState
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
+from sklearn import datasets
 import time
 import operator
 import random
@@ -66,7 +67,16 @@ class KNN(object):
             print i,len(X),'done'
             result.append(self.predict(x))
         return np.array(result)
+if __name__ == '__main__':
+    n_neighbors = 5
+    X,y = datasets.make_moons(220,True,noise=0.21)
+    knn = KNN(X[:120], y[:120], n_neighbors,'Euclidean',False) 
+    pred_y = knn.pred(X[120:])
+    print pred_y
+    print y[120:]
+    print 'Accuracy:',1 - np.sum(np.abs(pred_y-y[120:]))/120.
 
+'''
 if __name__ == '__main__':
     n_neighbors = 5
     iris = load_iris()
@@ -94,3 +104,4 @@ if __name__ == '__main__':
     plt.title("3-Class classification (k = %i)"% (n_neighbors))
     
     plt.show()
+    '''

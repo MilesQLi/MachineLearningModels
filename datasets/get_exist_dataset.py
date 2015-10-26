@@ -38,7 +38,10 @@ _______________________________
 from sklearn import datasets
 datasets.make_moons(sample number,shuffle or not,noise=0.21)
 
-   
+_______________________________
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
     
 '''
 
