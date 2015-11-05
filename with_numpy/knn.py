@@ -16,10 +16,11 @@ from matplotlib.colors import ListedColormap
 
 
 class node(object):
-    def __init__(self,data=None,left=None,right=None):
+    def __init__(self,data=None,left=None,right=None,no = -1):
         self.data = data
         self.left = left
         self.right = right
+        self.no = no
 
 class neighbours(object):
     def __init__(self,target,k,dist):
@@ -28,43 +29,46 @@ class neighbours(object):
         self.neighbours = []
         self.largest_distance = 0
         self.dist = dist
-    def add(self,point):
+    def add(self,root):
+        point = root.data
         dis = self.dist(point,self.target)
         for i,e in enumerate(self.neighbours):
             if i == self.k:
                 return
             if e[1] > dis:
-                self.neighbours.insert(i, [point,dis])
+                self.neighbours.insert(i, [point,dis,root.no])
                 self.neighbours = self.neighbours[:self.k]
                 self.largest_distance = self.neighbours[-1][1]
                 assert len(self.neighbours) <= self.k
                 return
-        self.neighbours.append([point,dis])
+        self.neighbours.append([point,dis,root.no])
         self.neighbours = self.neighbours[:self.k]
         self.largest_distance = self.neighbours[-1][1]
         #print 'len:',len(self.neighbours)
         assert len(self.neighbours) <= self.k
+    #return the indexs of neighbours
     def get_neighbours(self):
-        return [e[0] for e in self.neighbours]
+        return [e[2] for e in self.neighbours]
 
 class kdtree(object):
     def __init__(self,X,dist):
         self.m = X.shape[1]
         self.n = X.shape[0]
-        self.root = self.build_tree(list(X),0)
+        X_ = [(x,i) for i,x in enumerate(list(X))]
+        self.root = self.build_tree(X_,0)
         self.dist = dist
     def build_tree(self,X,depth):
         if X == []:
             return None
         dim = depth%self.m
-        X.sort(key = lambda x:x[dim])
+        X.sort(key = lambda x:x[0][dim])
         median = len(X) / 2
-        return node(X[median],self.build_tree(X[:median], depth+1),self.build_tree(X[median+1:], depth+1))
+        return node(X[median][0],self.build_tree(X[:median], depth+1),self.build_tree(X[median+1:], depth+1),X[median][1])
     def search(self,target,k):
         def search_it(best_neighbours,root,depth):
             if root == None:
                 return
-            best_neighbours.add(root.data)
+            best_neighbours.add(root)
             dim = depth % self.m
             if target[dim] < root.data[dim]:
                 near_part = root.left
@@ -102,7 +106,7 @@ class KNN(object):
         self.datay = datay
         self.use_kdtree = use_kdtree
         if use_kdtree:
-            self.kdtree = kdtree(X,self.dist)
+            self.kdtree = kdtree(datax,self.dist)
         
     def Euclidean(self, x1, x2):
         return np.sqrt(np.sum((x1-x2)**2))
@@ -147,10 +151,9 @@ class KNN(object):
     def pred(self,X):
         result = []
         for i,x in zip(range(len(X)),X):
-            print i,len(X),'done'
+            #print i,len(X),'done'
             result.append(self.predict(x))
         return np.array(result)
-
 '''
 if __name__ == '__main__':
     n_neighbors = 5
@@ -160,27 +163,34 @@ if __name__ == '__main__':
     
     for i in range(X.shape[0]):
         a = kd.search(X[i], n_neighbors)
-        b = knn.print_kneighbours(X[i])
-        for l,m in zip(a,b):
-            print np.sum(np.abs(l-m))
-    for i in a:
-        print i,knn.dist(X[1],i)
-    print 'second part'
-    b = knn.print_kneighbours(X[1])
-    for i in b:
-        print i,knn.dist(X[1],i)
-    #print kd.search(X[1], n_neighbors) == knn.print_kneighbours(X[1])
-    print X[:10]
+        b = knn.find_kneighbours(X[i])
+        assert(a==b)
+        print a
+        print b
+        
 '''
+
 
 if __name__ == '__main__':
     n_neighbors = 5
-    X,y = datasets.make_moons(220,True,noise=0.21)
-    knn = KNN(X[:120], y[:120], n_neighbors,'Euclidean',False) 
-    pred_y = knn.pred(X[120:])
-    print pred_y
-    print y[120:]
-    print 'Accuracy:',1 - np.sum(np.abs(pred_y-y[120:]))/120.
+    X,y = datasets.make_moons(22000,True,noise=0.21)
+    test_begin = 15120
+    t1 = time.clock()
+    knn = KNN(X[:test_begin], y[:test_begin], n_neighbors,'Euclidean',True) 
+    pred_y = knn.pred(X[test_begin:])
+    length = len(pred_y)
+    t2 = time.clock()
+    #print pred_y
+    #print y[120:]
+    print 'Accuracy:',1 - np.sum(np.abs(pred_y-y[test_begin:]))/float(length),'time:',t2-t1
+    t1 = time.clock()
+    knn = KNN(X[:test_begin], y[:test_begin], n_neighbors,'Euclidean',False) 
+    pred_y = knn.pred(X[test_begin:])
+    length = len(pred_y)
+    t2 = time.clock()
+    #print pred_y
+    #print y[120:]
+    print 'Accuracy:',1 - np.sum(np.abs(pred_y-y[test_begin:]))/float(length),'time:',t2-t1
 
 '''
 if __name__ == '__main__':
