@@ -1,11 +1,15 @@
 import sys
-sys.path.append('..')
+
+import theano
+
 from datasets import *
-from with_theano import *
 import matplotlib.pyplot as plt
 import numpy as np
-import theano
 import theano.tensor as T
+from with_theano import *
+
+
+sys.path.append('..')
 
 def func(x):
     if 2 * x[1] - 3 * x[0] > 23.5:

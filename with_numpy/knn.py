@@ -1,16 +1,18 @@
 # coding=utf-8
-import numpy as np
-from scipy.linalg import svd
-from sklearn.datasets import fetch_olivetti_faces
-from numpy.random import RandomState
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
-from sklearn import datasets
-import time
+import csv
 import operator
 import random
-import csv
+import time
+
 from matplotlib.colors import ListedColormap
+from numpy.random import RandomState
+from scipy.linalg import svd
+from sklearn import datasets
+from sklearn.datasets import fetch_olivetti_faces
+from sklearn.datasets import load_iris
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class node(object):

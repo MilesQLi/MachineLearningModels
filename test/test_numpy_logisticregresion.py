@@ -1,9 +1,12 @@
 import sys
-sys.path.append('..')
+
 from datasets import *
-from with_numpy import *
 import matplotlib.pyplot as plt
 import numpy as np
+from with_numpy import *
+
+
+sys.path.append('..')
 
 def func(x):
     if 2 * x[1] - 3 * x[0] > 23.5:

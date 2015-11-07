@@ -1,17 +1,21 @@
 # coding=utf-8
 
-import numpy
-import numpy as np
-import theano
-import gzip
 import cPickle
-import theano.tensor as T
+import gzip
+import os
 import sys
 import time
-import os
+
+import numpy
+import theano
 from theano.tensor.shared_randomstreams import RandomStreams
-import matplotlib.pylab as plt
+
 import PIL.Image as Image
+import matplotlib.pylab as plt
+import numpy as np
+import theano.tensor as T
+
+
 def scale_to_unit_interval(ndar, eps=1e-8):
     """ Scales all values in the ndarray ndar to be between 0 and 1 """
     ndar = ndar.copy()

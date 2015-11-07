@@ -1,12 +1,14 @@
 # coding=utf-8
 
-import numpy
-import numpy as np
-import theano
-import gzip
 import cPickle
-import theano.tensor as T
+import gzip
 import sys
+
+import numpy
+import theano
+
+import numpy as np
+import theano.tensor as T
 
 
 def contextwin(x, n_win):

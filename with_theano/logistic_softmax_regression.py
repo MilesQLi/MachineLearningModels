@@ -1,7 +1,8 @@
 # coding=utf-8
 import theano
-import theano.tensor as T
+
 import numpy as np
+import theano.tensor as T
 
 
 class LogisticRegression(object):

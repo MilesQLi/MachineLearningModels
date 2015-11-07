@@ -1,6 +1,7 @@
 # coding=utf-8
 import numpy as np
 
+
 class FNN(object):
     def __init__(self, n_neurons, n_input, n_ouput):
         self.Ws = []

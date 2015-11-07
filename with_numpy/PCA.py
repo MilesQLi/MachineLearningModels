@@ -1,11 +1,15 @@
 # coding=utf-8
-import numpy as np
+import time
+
+from numpy.random import RandomState
 from scipy.linalg import svd
 from sklearn.datasets import fetch_olivetti_faces
-from numpy.random import RandomState
-import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
-import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 class PCA(object):
     def __init__(self, n_component):
         self.n_component = n_component

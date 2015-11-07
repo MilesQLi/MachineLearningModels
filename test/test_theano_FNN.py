@@ -1,14 +1,18 @@
+import cPickle
+import gzip
 import sys
-sys.path.append('..')
+
+from sklearn import datasets
+import theano
+
 from datasets import *
-from with_theano import *
 import matplotlib.pyplot as plt
 import numpy as np
-import theano
 import theano.tensor as T
-from sklearn import datasets
-import gzip
-import cPickle
+from with_theano import *
+
+
+sys.path.append('..')
 
 
 if __name__ == '__main__':

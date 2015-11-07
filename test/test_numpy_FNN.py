@@ -1,13 +1,17 @@
-import sys
-sys.path.append('..')
-from datasets import *
-from with_numpy import *
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn import datasets
-import time
 import cPickle
 import gzip
+import sys
+import time
+
+from sklearn import datasets
+
+from datasets import *
+import matplotlib.pyplot as plt
+import numpy as np
+from with_numpy import *
+
+
+sys.path.append('..')
 if __name__ == '__main__':
     f = gzip.open('mnist.pkl.gz', 'rb')
     train_set, valid_set, test_set = cPickle.load(f)

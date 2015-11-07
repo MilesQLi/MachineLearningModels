@@ -1,10 +1,14 @@
 # coding=utf-8
-import numpy as np
-from sklearn import datasets
-import matplotlib.pyplot as plt
-import gzip
 import cPickle
+import gzip
 import time
+
+from sklearn import datasets
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 class svm(object):
     def __init__(self, x, y, C, kernel, epi=0.01):
         self.C = C

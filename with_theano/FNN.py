@@ -1,10 +1,11 @@
 # coding=utf-8
 import theano
-import theano.tensor as T
-import numpy as np
 
 from Layers import *
 from logistic_softmax_regression import *
+import numpy as np
+import theano.tensor as T
+
 
 class FNN(object):
     def __init__(self, input, n_neurons, n_input, n_ouput):
