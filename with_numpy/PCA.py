@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import numpy as np
 from scipy.linalg import svd
 from sklearn.datasets import fetch_olivetti_faces
@@ -7,33 +7,33 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 import time
 class PCA(object):
-    def __init__(self,n_component):
+    def __init__(self, n_component):
         self.n_component = n_component
     
-    def train(self,X):
-        m,n = X.shape
-        self.mean = np.average(X, axis = 0).reshape(X.shape[1],)
+    def train(self, X):
+        m, n = X.shape
+        self.mean = np.average(X, axis=0).reshape(X.shape[1],)
         X_ = X - self.mean
-        if m>n:
-            U,S,V = svd(X_.transpose())
+        if m > n:
+            U, S, V = svd(X_.transpose())
             self.U = U
         else:
-            U,S,V = svd(X_)
+            U, S, V = svd(X_)
             self.U = V.transpose()
             
-    def transform(self,X):
+    def transform(self, X):
         X_ = X - self.mean
-        return np.dot(X_,self.U[:,:self.n_component])
-    def reconstruct(self,X):
+        return np.dot(X_, self.U[:, :self.n_component])
+    def reconstruct(self, X):
         X_ = X - self.mean
-        temp1 = np.dot(X_,self.U[:,:self.n_component])
-        #print temp1[:6,:]
-        temp2 = np.dot(temp1,self.U[:,:self.n_component].transpose())
+        temp1 = np.dot(X_, self.U[:, :self.n_component])
+        # print temp1[:6,:]
+        temp2 = np.dot(temp1, self.U[:, :self.n_component].transpose())
         result = temp2 + self.mean   
-        print 'mean error:',np.sum((X-result)**2)/(X.shape[0]*X.shape[1])
+        print 'mean error:', np.sum((X - result) ** 2) / (X.shape[0] * X.shape[1])
         return result
-    def construct(self,X):
-        temp = np.dot(X,self.U[:,:self.n_component].transpose())
+    def construct(self, X):
+        temp = np.dot(X, self.U[:, :self.n_component].transpose())
         return temp + self.mean
 
 def plot_gallery(title, images, n_col=3, n_row=2):
@@ -76,18 +76,18 @@ if __name__ == '__main__':
     plt.show()
 
 '''
-#make face
+# make face
 if __name__ == '__main__':
     rng = RandomState(0)
     dataset = fetch_olivetti_faces(shuffle=True, random_state=rng)
     faces = dataset.data  
-    tima  = 0  
+    tima = 0  
     pca = PCA(20)
     pca.train(faces)
-    print faces.shape,pca.mean.shape
-    test_x = (np.random.rand(30,20)-0.5)*20
+    print faces.shape, pca.mean.shape
+    test_x = (np.random.rand(30, 20) - 0.5) * 20
     print test_x.shape
-    plot_gallery('recon components', pca.construct(test_x),5,6)
+    plot_gallery('recon components', pca.construct(test_x), 5, 6)
     plt.show()
     print tima    
 '''   

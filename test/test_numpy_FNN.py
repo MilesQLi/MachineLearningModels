@@ -18,9 +18,9 @@ if __name__ == '__main__':
     valid_x = valid_set[0]
     valid_y = valid_set[1]
     fnn = FNN.FNN([50], 784, 10)
-    #print fnn.pred(x)
-    #print fnn.pred_prob(x)
-    #print fnn.pred_prob(x,True)
+    # print fnn.pred(x)
+    # print fnn.pred_prob(x)
+    # print fnn.pred_prob(x,True)
     start = time.clock()
     epochs = 500
     best = 10.
@@ -30,19 +30,19 @@ if __name__ == '__main__':
     n_each_fold = n_samples / fold
     for epoch in range(epochs):
         for i in range(fold):
-            fnn.train(x[i*n_each_fold:(i+1)*n_each_fold],y[i*n_each_fold:(i+1)*n_each_fold])
+            fnn.train(x[i * n_each_fold:(i + 1) * n_each_fold], y[i * n_each_fold:(i + 1) * n_each_fold])
         error = fnn.error(valid_x, valid_y)
         if error <= best + 0.01:
-            print 'epoch:',epoch,'cross entropy:',fnn.cross_entropy(x, y),'error:',error,'\r',
+            print 'epoch:', epoch, 'cross entropy:', fnn.cross_entropy(x, y), 'error:', error, '\r',
             best = error
             acc = 0
         else:
             acc += 1
-            print 'best:',best,'error:',error
-            #if acc >= 50:
+            print 'best:', best, 'error:', error
+            # if acc >= 50:
             #    break
         
-    print 'epoch',epoch, 'total time:%.2fm'%((time.clock()-start) / 60.)    
+    print 'epoch', epoch, 'total time:%.2fm' % ((time.clock() - start) / 60.)    
 
 '''
 if __name__ == '__main__':

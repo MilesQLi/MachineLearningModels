@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 import theano
 import theano.tensor as T
 import numpy as np
@@ -12,7 +12,7 @@ class FullConnectedLayer(object):
         self.W = theano.shared(np.random.uniform(
             low=-np.sqrt(6. / (n_in + n_out)),
             high=np.sqrt(6. / (n_in + n_out)),
-            size=(n_in, n_out)),name='W',borrow=True)
+            size=(n_in, n_out)), name='W', borrow=True)
         self.b = theano.shared(np.random.uniform(
             low=-np.sqrt(6. / (n_in + n_out)),
             high=np.sqrt(6. / (n_in + n_out)),
@@ -20,5 +20,5 @@ class FullConnectedLayer(object):
             ),
             name='W',
             borrow=True)
-        self.output = T.nnet.sigmoid(T.dot(input,self.W)+self.b)
+        self.output = T.nnet.sigmoid(T.dot(input, self.W) + self.b)
         self.params = [self.W, self.b]
