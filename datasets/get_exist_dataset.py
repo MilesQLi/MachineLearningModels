@@ -96,6 +96,15 @@ _______________________________
 
 '''
 
+'''
+for rnn:
+
+Reber Grammar
+it is a state machine, with a temporart state and the input you should give an according output.
+http://christianherta.de/lehre/dataScience/machineLearning/neuralNetworks/reberGrammar.php 
+
+'''
+
 
 
 '''
