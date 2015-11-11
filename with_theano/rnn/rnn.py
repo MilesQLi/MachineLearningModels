@@ -61,7 +61,7 @@ if __name__ == '__main__':
             err += tmp
             print tmp,'\r',
         error.append(err)
-    plt.plot(np.arange(50), error, 'b-')
+    plt.plot(np.arange(200), error, 'b-')
     plt.xlabel('epochs')
     plt.ylabel('error')
     plt.show()

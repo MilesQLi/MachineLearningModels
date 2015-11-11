@@ -94,7 +94,7 @@ if __name__ == '__main__':
     ls = lstm(7, 7, 10)
     train_data = reberGrammar.get_n_embedded_examples(1000)
     error = []
-    for i in xrange(50):
+    for i in xrange(200):
         print '\n',i,'/200'
         err = 0
         for x,y in train_data:
@@ -102,7 +102,7 @@ if __name__ == '__main__':
             err += tmp
             print tmp,'\r',
         error.append(err)
-    plt.plot(np.arange(50), error, 'b-')
+    plt.plot(np.arange(200), error, 'b-')
     plt.xlabel('epochs')
     plt.ylabel('error')
     plt.show()
