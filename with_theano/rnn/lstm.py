@@ -3,6 +3,7 @@
 import cPickle
 import gzip
 import sys
+sys.path.append('../../datasets/')
 
 import matplotlib.pyplot as plt
 import numpy
