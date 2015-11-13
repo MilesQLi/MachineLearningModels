@@ -46,34 +46,26 @@ def rmsprop(cost, params, learning_rate, rho = 0.1):
                 updates.append((p, p_new))
             return updates
 
-'''
-def adam(cost, params,  learning_rate = 0.001,kappa = 1-1e-8, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
-        grads = T.grad(cost, params)
-        iterations = theano.shared(np.array(0.))  # @UndefinedVariable
-        updates = [(iterations, iterations+1.)]
+def adam(cost, params,  lr = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
+    grads = T.grad(cost, params)
+    iterations = theano.shared(np.array(0.))  # @UndefinedVariable
+    updates = [(iterations, iterations+1.)]
 
-        i = iterations
-        beta_1_t = beta1 **i
+    t = iterations + 1
+    lr_t = lr * T.sqrt(1-beta2**t)/(1-beta1**t)
 
-        # the update below seems missing from the paper, but is obviously required
-        beta_2_t = beta2 **i 
+    for p, g in zip(params, grads):
+        m = theano.shared(p.get_value() * 0.)  # zero init of moment
+        v = theano.shared(p.get_value() * 0.)  # zero init of velocity
 
-        for p, g in zip(params, grads):
-            m = theano.shared(p.get_value() * 0.) # zero init of moment
-            v = theano.shared(p.get_value() * 0.) # zero init of velocity
+        m_t = (beta1 * m) + (1 - beta1) * g
+        v_t = (beta2 * v) + (1 - beta2) * (g**2)
+        p_t = p - lr_t * m_t / (T.sqrt(v_t) + eta)
 
-            m_t = (beta_1_t * m) + (1 - beta_1_t) * g
-            v_t = (beta_2_t * v) + (1 - beta_2_t) * (g**2)
-
-            m_b_t = m_t / (1 - beta_1_t)
-            v_b_t = v_t / (1 - beta_2_t)
-
-            p_t = p - learning_rate * m_b_t / (T.sqrt(v_b_t) + eta)
-            
-            updates.append((m, m_t))
-            updates.append((v, v_t))
-            updates.append((p, p_t)) # apply constraints
-        return updates
+        updates.append((m, m_t))
+        updates.append((v, v_t))
+        updates.append((p, p_t))  # apply constraints
+    return updates
 '''
 def adam(cost, params,  learning_rate = 0.001, beta1 = 0.9, beta2 = 0.999, eta = 1e-8):
             grads = T.grad(cost, params)
@@ -94,6 +86,7 @@ def adam(cost, params,  learning_rate = 0.001, beta1 = 0.9, beta2 = 0.999, eta =
                 updates.append((p, p - delta_theta))
             return updates
 
+'''
                 
 def adadelta(cost, params, rho = 0.05):
             grads = T.grad(cost, params)

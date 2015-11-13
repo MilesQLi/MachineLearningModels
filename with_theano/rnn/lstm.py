@@ -93,10 +93,10 @@ class lstm(object):
          
         #updates = utils.rmsprop(cost, self.params, learning_rate)
         #updates = utils.adadelta(cost, self.params)       
-        #updates = utils.gd(cost, self.params, learning_rate)
+        updates = utils.gd(cost, self.params, learning_rate)
         #updates = utils.adagrad(cost, self.params, learning_rate)
         #updates = utils.gd_momentum(cost, self.params, learning_rate)
-        updates = utils.adam(cost, self.params)
+        #updates = utils.adam(cost, self.params)
         
         
         self.train = theano.function([self.x, self.target], cost, updates=updates)
