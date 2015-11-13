@@ -2,20 +2,27 @@
 
 import cPickle
 import gzip
+from sklearn import preprocessing
 import sys
-sys.path.append('../../datasets/')
+import time
 
-import matplotlib.pyplot as plt
+sys.path.append('../../datasets/')
+sys.path.append('../')
 import numpy
 import theano
 
+import matplotlib.pyplot as plt
 import numpy as np
-import theano.tensor as T
 import reberGrammar
-from sklearn import preprocessing
+import theano.tensor as T
+
+import utils
+
+
+
 
 class lstm(object):
-    def __init__(self, n_in, n_out, n_h, learning_rate=0.12):
+    def __init__(self, n_in, n_out, n_h, learning_rate=1.12):
         
         self.x = T.matrix(dtype=theano.config.floatX)  # @UndefinedVariable
         self.target = T.matrix(dtype=theano.config.floatX)  # @UndefinedVariable
@@ -82,9 +89,15 @@ class lstm(object):
         
         cost = -T.mean(self.target * T.log(ys) + (1 - self.target) * T.log(1 - ys))
         
-        grads = T.grad(cost, self.params)
+
+         
+        #updates = utils.rmsprop(cost, self.params, learning_rate)
+        #updates = utils.adadelta(cost, self.params)       
+        #updates = utils.gd(cost, self.params, learning_rate)
+        #updates = utils.adagrad(cost, self.params, learning_rate)
+        #updates = utils.gd_momentum(cost, self.params, learning_rate)
+        updates = utils.adam(cost, self.params)
         
-        updates = [(param, param - learning_rate * grad) for param, grad in zip(self.params, grads)]
         
         self.train = theano.function([self.x, self.target], cost, updates=updates)
         
@@ -94,27 +107,29 @@ if __name__ == '__main__':
     ls = lstm(7, 7, 10)
     train_data = reberGrammar.get_n_embedded_examples(1000)
     error = []
-    for i in xrange(200):
-        print '\n',i,'/200'
+    t1 = time.clock()
+    for i in xrange(60):
+        print '\n', i, '/60'
         err = 0
-        for x,y in train_data:
-            tmp = ls.train(x,y)
+        for x, y in train_data:
+            tmp = ls.train(x, y)
             err += tmp
-            print tmp,'\r',
+            print tmp, '\r',
+        #print ls.predict(train_data[0][0])
         error.append(err)
-    plt.plot(np.arange(200), error, 'b-')
+    print 'time:', time.clock() - t1
+    plt.plot(np.arange(60), error, 'b-')
     plt.xlabel('epochs')
     plt.ylabel('error')
     plt.show()
+    print error
     test_data = reberGrammar.get_n_embedded_examples(100)
     binarizer = preprocessing.Binarizer(threshold=0.1)
     error = 0
-    for x,y in test_data:
+    for x, y in test_data:
         y_pred = ls.predict(x)
+        #print y_pred
         y_pred = binarizer.transform(y_pred)
-        for a,b in zip(y,y_pred):
-            print '___________'
-            print a
-            print b
-            error += np.mean(a-b)
+        for a, b in zip(y, y_pred):
+            error += np.mean(a - b)
     print error
