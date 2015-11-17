@@ -91,9 +91,9 @@ class lstm(object):
         
 
          
-        #updates = utils.rmsprop(cost, self.params, learning_rate)
+        updates = utils.rmsprop(cost, self.params, 0.052)
         #updates = utils.adadelta(cost, self.params)       
-        updates = utils.gd(cost, self.params, learning_rate)
+        #updates = utils.gd(cost, self.params, learning_rate)
         #updates = utils.adagrad(cost, self.params, learning_rate)
         #updates = utils.gd_momentum(cost, self.params, learning_rate)
         #updates = utils.adam(cost, self.params)

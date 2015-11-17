@@ -1,4 +1,5 @@
 import sys
+sys.path.append('..')
 
 import theano
 
@@ -9,7 +10,6 @@ import theano.tensor as T
 from with_theano import *
 
 
-sys.path.append('..')
 
 def func(x):
     if 2 * x[1] - 3 * x[0] > 23.5:
@@ -37,16 +37,23 @@ if __name__ == '__main__':
     
     logi = logistic_softmax_regression.LogisticRegression(X, 2)
     
-    cost = logi.negative_log_likelihood(Y)
+    #objective = 'cross_entropy'
+    objective = 'negative_log_likelihood'
+    cost = getattr(logi,objective)(Y)
     
-    grads = [T.grad(cost, param) for param in logi.params]
     
-    alpha = 0.001
-    
+    '''
+    adagrad sometimes gives perfect result
+    '''
     #!!!!!!!!!!!
-    updates = [(logi.W, logi.W - 0.01 * grads[0]), (logi.b, logi.b - 0.1 * grads[1])]
+    #grads = [T.grad(cost, param) for param in logi.params]
+    #updates = [(logi.W, logi.W - 0.01 * grads[0]), (logi.b, logi.b - 0.01 * grads[1])]
+    #updates = utils.adagrad(cost, logi.params, 1.1)
+    updates = utils.rmsprop(cost, logi.params,0.052)
+    #updates = utils.adadelta(cost, logi.params)
+    #updates = utils.gd(cost, logi.params,0.12,0,0)
     
-    train = theano.function([X, Y], logi.negative_log_likelihood(Y), updates=updates)
+    train = theano.function([X, Y], cost, updates=updates)
     
     # input must be wrapped by []
     pred = theano.function([X], outputs=logi.y_pred)
@@ -56,9 +63,7 @@ if __name__ == '__main__':
     epoch = 5000
 
     for i in range(epoch):
-        print 'epoch:', i
-        print 'neg log likelihood:', train(trainx, trainy)
-        print 'mean error:', error(testx, testy)
+        print 'epoch:', i,objective,':', train(trainx, trainy), 'mean error:', error(testx, testy),'\r',
        # print np.array(pred(testx)).round().astype(int),testy
         # print logi.W.get_value()
         # print logi.b.get_value()

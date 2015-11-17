@@ -18,7 +18,7 @@ class LogisticRegression(object):
             size=(n_in,)), name='W', borrow=True)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # #!!  b mustbe a number not a vector or 
-        self.b = theano.shared(np.random.uniform(), name='b')
+        self.b = theano.shared(np.array(0.), name='b')
         # self.y = 1 / (1 + T.exp(-T.dot(input, self.W) - self.b))
         self.y = T.nnet.sigmoid(T.dot(input, self.W) + self.b)
         self.y_pred = self.y > 0.5
@@ -38,10 +38,11 @@ class LogisticRegression(object):
     def negative_log_likelihood(self,y):
         return -T.mean(T.log(self.y * (y*2.-1) + 3))
     '''                     
-    
+            
     def negative_log_likelihood(self, y):
         # TODO sometimes it is nan
-        return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
+        return -T.mean(T.log(T.abs_(y-1+self.y)))
+        #return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
     
     
     def cross_entropy(self, y):
@@ -74,7 +75,7 @@ class SoftmaxRegression(object):
         
         self.params = [self.W, self.b]
     
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!1                           
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!1                  
     def negative_log_likelihood(self, y):
         return -T.mean(T.log(self.y)[T.arange(y.shape[0]), y])
     

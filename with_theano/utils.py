@@ -14,7 +14,7 @@ import numpy as np
 import theano.tensor as T
 
 
-def gd(cost, params, learning_rate, decay = 0.1, momentum = 0.1):
+def gd(cost, params, learning_rate = 1.2, decay = 0.1, momentum = 0.1):
             iteration = theano.shared(np.array(0.))  # @UndefinedVariable
             grads = T.grad(cost, params)
             vs = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
@@ -23,7 +23,11 @@ def gd(cost, params, learning_rate, decay = 0.1, momentum = 0.1):
             updates +=  [(v, momentum * v + lr * grad) for v, grad in zip(vs, grads)]
             updates.append((iteration,iteration+1))
             return updates
-def adagrad(cost, params, learning_rate):
+
+
+
+        
+def adagrad(cost, params, learning_rate = 1.2):
             grads = T.grad(cost, params)
             accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
             updates = []
@@ -34,7 +38,7 @@ def adagrad(cost, params, learning_rate):
                 updates.append((p, p_new))
             return updates
         
-def rmsprop(cost, params, learning_rate, rho = 0.1):
+def rmsprop(cost, params, learning_rate = 1.2, rho = 0.9):
             grads = T.grad(cost, params)
             accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
             delta_accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
@@ -88,7 +92,7 @@ def adam(cost, params,  learning_rate = 0.001, beta1 = 0.9, beta2 = 0.999, eta =
 
 '''
                 
-def adadelta(cost, params, rho = 0.05):
+def adadelta(cost, params, learning_rate = 0.012, rho = 0.95):
             grads = T.grad(cost, params)
             accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
             delta_accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
@@ -96,8 +100,8 @@ def adadelta(cost, params, rho = 0.05):
             for p, g, a, d in zip(params, grads, accumulators, delta_accumulators):
                 a_new = rho*a +(1-rho)* g ** 2
                 updates.append((a, a_new))
-                delta =   g *T.sqrt(d+0.01)/ T.sqrt(a_new + 0.01)
-                p_new = p - delta
+                delta =  - learning_rate*g *T.sqrt(d+0.01)/ T.sqrt(a_new + 0.01)
+                p_new = p + delta
                 updates.append((p, p_new))
                 updates.append((d,rho*d +(1-rho)* delta ** 2 ))
             return updates
