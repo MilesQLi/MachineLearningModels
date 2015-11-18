@@ -14,7 +14,7 @@ import numpy as np
 import theano.tensor as T
 
 
-def gd(cost, params, learning_rate = 1.2, decay = 0.1, momentum = 0.1):
+def gd(cost, params, learning_rate = 0.012, decay = 0.1, momentum = 0.1):
             iteration = theano.shared(np.array(0.))  # @UndefinedVariable
             grads = T.grad(cost, params)
             vs = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable

@@ -49,9 +49,9 @@ if __name__ == '__main__':
     #grads = [T.grad(cost, param) for param in logi.params]
     #updates = [(logi.W, logi.W - 0.01 * grads[0]), (logi.b, logi.b - 0.01 * grads[1])]
     #updates = utils.adagrad(cost, logi.params, 1.1)
-    updates = utils.rmsprop(cost, logi.params,0.052)
+    #updates = utils.rmsprop(cost, logi.params,0.052)
     #updates = utils.adadelta(cost, logi.params)
-    #updates = utils.gd(cost, logi.params,0.12,0,0)
+    updates = utils.gd(cost, logi.params,0.12,0,0)
     
     train = theano.function([X, Y], cost, updates=updates)
     

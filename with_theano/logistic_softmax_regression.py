@@ -41,12 +41,14 @@ class LogisticRegression(object):
             
     def negative_log_likelihood(self, y):
         # TODO sometimes it is nan
-        return -T.mean(T.log(T.abs_(y-1+self.y)))
+        z = T.clip(T.abs_(y-1+self.y), 0.0000001, 0.999999999)
+        return -T.mean(T.log(z))
         #return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
     
     
     def cross_entropy(self, y):
-        return T.mean(-y * T.log(self.y) - (1 - y) * T.log(1 - self.y))
+        y_used = T.clip(self.y, 0.0000001, 0.999999999)
+        return T.mean(-y * T.log(y_used) - (1 - y) * T.log(y_used))
     
     
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
