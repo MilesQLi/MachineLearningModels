@@ -37,21 +37,21 @@ if __name__ == '__main__':
     
     logi = logistic_softmax_regression.LogisticRegression(X, 2)
     
-    #objective = 'cross_entropy'
-    objective = 'negative_log_likelihood'
-    cost = getattr(logi,objective)(Y)
+    objective = 'cross_entropy'
+    # objective = 'negative_log_likelihood'
+    cost = getattr(logi, objective)(Y)
     
     
     '''
     adagrad sometimes gives perfect result
     '''
     #!!!!!!!!!!!
-    #grads = [T.grad(cost, param) for param in logi.params]
-    #updates = [(logi.W, logi.W - 0.01 * grads[0]), (logi.b, logi.b - 0.01 * grads[1])]
-    #updates = utils.adagrad(cost, logi.params, 1.1)
-    #updates = utils.rmsprop(cost, logi.params,0.052)
-    #updates = utils.adadelta(cost, logi.params)
-    updates = utils.gd(cost, logi.params,0.12,0,0)
+    # grads = [T.grad(cost, param) for param in logi.params]
+    # updates = [(logi.W, logi.W - 0.01 * grads[0]), (logi.b, logi.b - 0.01 * grads[1])]
+    # updates = utils.adagrad(cost, logi.params, 1.1)
+    # updates = utils.rmsprop(cost, logi.params,0.052)
+    # updates = utils.adadelta(cost, logi.params)
+    updates = utils.gd(cost, logi.params, 0.012, 0, 0)
     
     train = theano.function([X, Y], cost, updates=updates)
     
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     epoch = 5000
 
     for i in range(epoch):
-        print 'epoch:', i,objective,':', train(trainx, trainy), 'mean error:', error(testx, testy),'\r',
+        print 'epoch:', i, objective, ':', train(trainx, trainy), 'mean error:', error(testx, testy), '\r',
        # print np.array(pred(testx)).round().astype(int),testy
         # print logi.W.get_value()
         # print logi.b.get_value()

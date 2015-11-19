@@ -12,10 +12,7 @@ class LogisticRegression(object):
         self.n_in = n_in
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        self.W = theano.shared(np.random.uniform(
-            low=-np.sqrt(6. / (n_in + 1)),
-            high=np.sqrt(6. / (n_in + 1)),
-            size=(n_in,)), name='W', borrow=True)
+        self.W = theano.shared(np.zeros((n_in,)), name='W', borrow=True)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # #!!  b mustbe a number not a vector or 
         self.b = theano.shared(np.array(0.), name='b')
@@ -41,14 +38,16 @@ class LogisticRegression(object):
             
     def negative_log_likelihood(self, y):
         # TODO sometimes it is nan
-        z = T.clip(T.abs_(y-1+self.y), 0.0000001, 0.999999999)
+        z = T.clip(T.abs_(y - 1 + self.y), 0.0000001, 0.999999999)
         return -T.mean(T.log(z))
-        #return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
+        # return -T.mean(T.log(T.abs_(self.y - (1 - y))))   
     
     
     def cross_entropy(self, y):
-        y_used = T.clip(self.y, 0.0000001, 0.999999999)
-        return T.mean(-y * T.log(y_used) - (1 - y) * T.log(y_used))
+        return T.nnet.binary_crossentropy(self.y, y).mean()
+        # y_used = self.y
+        # y_used = T.clip(self.y, 0.0000001, 0.999999999)
+        # return T.mean(-y * T.log(y_used) - (1 - y) * T.log(y_used))
     
     
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -61,17 +60,8 @@ class SoftmaxRegression(object):
         self.intput = input
         self.n_in = n_in
         self.n_out = n_out
-        self.W = theano.shared(np.random.uniform(
-            low=-np.sqrt(6. / (n_in + n_out)),
-            high=np.sqrt(6. / (n_in + n_out)),
-            size=(n_in, n_out)), name='W', borrow=True)
-        self.b = theano.shared(np.random.uniform(
-            low=-np.sqrt(6. / (n_in + n_out)),
-            high=np.sqrt(6. / (n_in + n_out)),
-            size=(n_out,)
-            ),
-            name='b',
-            borrow=True)
+        self.W = theano.shared(np.zeros(size=(n_in, n_out)), name='W', borrow=True)
+        self.b = theano.shared(np.zeros(size=(n_out,)), name='b', borrow=True)
         self.y = T.nnet.softmax(T.dot(input, self.W) + self.b)
         self.y_pred = T.argmax(self.y, axis=1)
         
