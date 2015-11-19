@@ -44,10 +44,12 @@ class LogisticRegression(object):
     
     
     def cross_entropy(self, y):
-        return T.nnet.binary_crossentropy(self.y, y).mean()
-        # y_used = self.y
-        # y_used = T.clip(self.y, 0.0000001, 0.999999999)
-        # return T.mean(-y * T.log(y_used) - (1 - y) * T.log(y_used))
+        
+        #return (-(y * T.log(self.y) + (1.0 - y) * T.log(1.0 - self.y))).mean()
+        #return T.nnet.binary_crossentropy(self.y, y).mean()
+         y_used = self.y
+         y_used = T.clip(self.y, 0.0000001, 0.999999999)
+         return T.mean(-y * T.log(y_used) - (1 - y) * T.log(1 - y_used))
     
     
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
