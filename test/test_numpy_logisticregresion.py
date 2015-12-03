@@ -1,12 +1,12 @@
 import sys
 
+sys.path.append('..')
+
 from datasets import *
 import matplotlib.pyplot as plt
 import numpy as np
 from with_numpy import *
 
-
-sys.path.append('..')
 
 def func(x):
     if 2 * x[1] - 3 * x[0] > 23.5:
@@ -31,18 +31,19 @@ if __name__ == '__main__':
     
     logi = logistic_softmax_regression.LogisticRegression(2)
     
-    epoch = 50000
-    alpha = 0.162
+    epoch = 500
+    alpha = 1.162
     for k in range(5):
         alpha /= 10
         for i in range(epoch):
             for j in range(5):
                 logi.train(trainx[j * 200:(j + 1) * 200], trainy[j * 200:(j + 1) * 200], alpha)
-            print 'epoch:', i + k * epoch, 'error:%10f' % logi.error(testx, testy), logi.gradient(trainx, trainy), np.mean((trainy - logi.pred(trainx)), axis=0), '\r',
+            print 'epoch:', i + k * epoch, 'error:%10f' % logi.error(testx, testy), logi.gradient(trainx, trainy), np.mean((trainy - logi.pred(trainx)), axis=0) 
     print logi.w
     print logi.b
     print testy
     print logi.pred(testx)
+    print logi.error(testx, testy)
     xx, yy = np.meshgrid(np.arange(5, 6, 0.3),
                          np.arange(18, 22, 0.3))
     Z = logi.pred(np.c_[xx.ravel(), yy.ravel()])

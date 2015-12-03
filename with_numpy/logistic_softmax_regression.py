@@ -13,15 +13,18 @@ class LogisticRegression(object):
         y = 1 / (1+np.exp(-np.dot(x,self.w)-self.b))
         return (y > 0.5).astype(int)
     
+    def predict(self,x):
+        y = 1 / (1+np.exp(-np.dot(x,self.w)-self.b))
+        return y  
     #def nll(self,x,y):
         
     def gradient(self,x,y):
         #print np.mean(((y-self.pred(x))*x.transpose()).transpose(),axis=0)
-        return np.mean(((y-self.pred(x))*x.transpose()).transpose(),axis=0)
+        return np.mean(((y-self.predict(x))*x.transpose()).transpose(),axis=0)
     
     def train(self,x,y, alpha):
         self.w += alpha* self.gradient(x, y)
-        self.b += alpha* np.mean((y-self.pred(x)),axis = 0)
+        self.b += alpha* np.mean((y-self.predict(x)),axis = 0)
     
     def error(self,x,y):
         z = self.pred(x)
