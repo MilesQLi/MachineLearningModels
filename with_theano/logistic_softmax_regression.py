@@ -73,6 +73,7 @@ class SoftmaxRegression(object):
     def negative_log_likelihood(self, y):
         return -T.mean(T.log(self.y)[T.arange(y.shape[0]), y])
     
+    #y is 
     def cross_entropy(self, y):
         return -T.mean(y * T.log(self.y)[T.arange(y.shape[0]), y])
     

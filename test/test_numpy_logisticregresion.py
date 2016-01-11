@@ -49,6 +49,7 @@ if __name__ == '__main__':
     Z = logi.pred(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     
+    logi.gradient_check(trainx[1 * 200:(1 + 1) * 200], trainy[1 * 200:(1 + 1) * 200])
     
     learned_x = np.arange(3, 8, 0.3)
     learned_y = (-logi.b - logi.w[0] * learned_x) / logi.w[1]
