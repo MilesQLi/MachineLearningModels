@@ -27,7 +27,7 @@ def gd(cost, params, learning_rate = 0.012, decay = 0.1, momentum = 0.1):
 
 
         
-def adagrad(cost, params, learning_rate = 1.2):
+def adagrad(cost, params, learning_rate = 0.012):
             grads = T.grad(cost, params)
             accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
             updates = []
@@ -38,7 +38,7 @@ def adagrad(cost, params, learning_rate = 1.2):
                 updates.append((p, p_new))
             return updates
         
-def rmsprop(cost, params, learning_rate = 1.2, rho = 0.9):
+def rmsprop(cost, params, learning_rate = 0.012, rho = 0.9):
             grads = T.grad(cost, params)
             accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
             delta_accumulators = [theano.shared(np.array(np.zeros(p.get_value().shape), dtype=theano.config.floatX)) for p in params]  # @UndefinedVariable
