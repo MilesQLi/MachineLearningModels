@@ -18,7 +18,6 @@ class LogisticRegression(object):
         self.b = theano.shared(np.array(0.), name='b')
         # self.y = 1 / (1 + T.exp(-T.dot(input, self.W) - self.b))
         self.y = T.nnet.sigmoid(T.dot(input, self.W) + self.b)
-        self.y_pred = self.y > 0.5
         # self.y_pred = T.round(self.y)   works too
         
         self.params = [self.W, self.b]
@@ -35,7 +34,11 @@ class LogisticRegression(object):
     def negative_log_likelihood(self,y):
         return -T.mean(T.log(self.y * (y*2.-1) + 3))
     '''                     
-            
+    
+    def pred(self,X):
+        y = T.nnet.sigmoid(T.dot(X, self.W) + self.b)
+        return y > 0.5
+    
     def negative_log_likelihood(self, y):
         # TODO sometimes it is nan
         z = T.clip(T.abs_(y - 1 + self.y), 0.0000001, 0.999999999)
@@ -53,8 +56,10 @@ class LogisticRegression(object):
     
     
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    def error(self, y):
-        return T.mean(T.neq(self.y_pred, y))
+    def error(self, x, y2):
+        y = T.nnet.sigmoid(T.dot(x, self.W) + self.b)
+        y_pred = y > 0.5
+        return T.mean(T.neq(y_pred, y2))
 
 class SoftmaxRegression(object):
     #!!!!!!!!!!!!!!!!! n_out is the num of classes

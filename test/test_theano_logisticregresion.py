@@ -58,7 +58,7 @@ if __name__ == '__main__':
     # input must be wrapped by []
     pred = theano.function([X], outputs=logi.y_pred)
     
-    error = theano.function([X, Y], outputs=logi.error(Y))
+    error = theano.function([X, Y], outputs=logi.error(X,Y))
     
     epoch = 5000
 
