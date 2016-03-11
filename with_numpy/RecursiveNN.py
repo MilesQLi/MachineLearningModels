@@ -19,3 +19,11 @@ class RecursiveNN(object):
     def __init__(self,n_in,n_hid):
         self.n_in = n_in
         self.n_hid = n_hid
+        
+        
+        
+    def farward(self,x,h):
+        pass
+    
+    def backward(self,delta_h,h):
+        pass
