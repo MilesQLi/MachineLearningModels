@@ -27,3 +27,6 @@ class RecursiveNN(object):
     
     def backward(self,delta_h,h):
         pass
+    
+if __name__ == '__main__':
+    pass
