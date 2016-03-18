@@ -16,12 +16,21 @@ import numpy as np
 
 
 class RecursiveNN(object):
-    def __init__(self,n_in,n_hid):
+    def __init__(self,n_in,n_hid, wx = None, wh = None, b = None):
         self.n_in = n_in
         self.n_hid = n_hid
-        self.wx = np.array(np.random.uniform(low=-0.012, high=0.012, size=(n_hid,n_in)))
-        self.wh = np.array(np.random.uniform(low=-0.012, high=0.012, size=(n_hid,n_hid)))
-        self.b = np.zeros(n_hid,)  # @UndefinedVariable
+        if wx == None:
+            self.wx = np.array(np.random.uniform(low=-0.012, high=0.012, size=(n_hid,n_in)))
+        else:
+            self.wx = wx
+        if wh == None:
+            self.wh = np.array(np.random.uniform(low=-0.012, high=0.012, size=(n_hid,n_hid)))
+        else:
+            self.wh = wh
+        if b == None:
+            self.b = np.zeros(n_hid,)  # @UndefinedVariable
+        else:
+            self.b = b
         
     def farward(self,x,h):
         return self.w.dot(x)+self.b
