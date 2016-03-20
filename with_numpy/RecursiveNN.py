@@ -16,7 +16,7 @@ import numpy as np
 
 
 class RecursiveNN(object):
-    def __init__(self,n_in,n_hid, wx = None, wh = None, b = None):
+    def __init__(self,n_in,n_hid, wx = None, wh = None, b = None, activation = np.tanh):
         self.n_in = n_in
         self.n_hid = n_hid
         if wx == None:
@@ -31,9 +31,10 @@ class RecursiveNN(object):
             self.b = np.zeros(n_hid,)  # @UndefinedVariable
         else:
             self.b = b
+        self.activation = activation
         
     def farward(self,x,h):
-        return self.w.dot(x)+self.b
+        return self.activation(self.w.dot(x)+self.b)
     
     def backward(self,delta_h,h):
         pass
