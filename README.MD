@@ -16,4 +16,4 @@ SVM,KNN,PCA,FNN,Recurent NN,LSTM,RBM
 Recursive NN, CNN
 
 ###contact me
-Email: stormier@126.com
+Email: qi.li@pku.edu.cn
