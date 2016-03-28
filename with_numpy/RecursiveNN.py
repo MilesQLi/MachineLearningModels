@@ -16,7 +16,7 @@ import numpy as np
 
 
 class RecursiveNN(object):
-    def __init__(self,n_in,n_hid, wx = None, wh = None, b = None, activation = np.tanh):
+    def __init__(self,n_in,n_hid, wx = None, wh = None, b = None, activation = None):
         self.n_in = n_in
         self.n_hid = n_hid
         if wx == None:
@@ -34,10 +34,18 @@ class RecursiveNN(object):
         self.activation = activation
         
     def farward(self,x,h):
-        return self.activation(self.w.dot(x)+self.b)
+        return self.activation.farward(self.w.dot(x)+self.b)
     
-    def backward(self,delta_h,h):
-        pass
+    def backward(self,delta_h, h, hlast):
+        '''
+        del_h is after activation
+        it is not batch version yet
+        '''
+        tmp = delta_h*self.activation.backward(h)
+        tmp = tmp.reshape(tmp.shape[0],1)
+        hlast = hlast.reshape(hlast.shape[0],1)
+        return [tmp.dot(hlast.T), tmp, tmp.dot(self.wh)]
+    
     
 if __name__ == '__main__':
     pass
