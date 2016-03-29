@@ -10,9 +10,24 @@ from scipy.linalg import svd
 from sklearn import datasets
 from sklearn.datasets import fetch_olivetti_faces
 from sklearn.datasets import load_iris
+import abc
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+
+class activation(object):
+    def __init__(self):
+        pass
+    
+    @abc.absractmethod
+    def farward(self):
+        return
+
+    @abc.absractmethod
+    def backward(self):
+        return
+
 
 
 class RecursiveNN(object):
