@@ -71,7 +71,7 @@ class RecursiveNN(object):
     def farward(self,x1,x2):
         return self.activation.farward(self.wh1.dot(x1)+self.wh2.dot(x2)+self.b)
     
-    def backward(self,delta_h, h, hlast):
+    def backward(self,delta_h, h, hlast1, hlast2):
         '''
         del_h is after activation
         it is not batch version yet
@@ -87,3 +87,4 @@ if __name__ == '__main__':
     x = np.random.random(5)
     x2 = np.random.random(5)
     print rnn.farward(x, x2)
+    print rnn.backward(x, x2, x2)
