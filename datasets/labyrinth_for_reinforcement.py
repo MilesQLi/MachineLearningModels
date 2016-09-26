@@ -25,8 +25,6 @@ class labyrinth(object):
                 self.step[i][1] = i
         
     def move(self, action):
-        if self.state == 3 or self.state == 7:
-            return -1, -1, True
         rand = np.random.random()
         index = action.argmax()
         if rand <= 0.8:
@@ -35,6 +33,9 @@ class labyrinth(object):
             self.state = self.step[self.state][index-1]
         else:
             self.state = self.step[self.state][(index+1)%4]
+            
+
+            
         state = np.zeros((11,))
         if self.state > 4:
             state[self.state-1] = 1

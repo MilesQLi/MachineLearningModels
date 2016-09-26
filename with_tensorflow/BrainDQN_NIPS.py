@@ -16,9 +16,9 @@ from collections import deque
 
 # Hyper Parameters:
 FRAME_PER_ACTION = 1
-GAMMA = 0.99 # decay rate of past observations
+GAMMA = 0.9 # decay rate of past observations
 OBSERVE = 100. # timesteps to observe before training
-EXPLORE = 150000. # frames over which to anneal epsilon
+EXPLORE = 1500. # frames over which to anneal epsilon
 FINAL_EPSILON = 0.0 # final value of epsilon
 INITIAL_EPSILON = 0.9 # starting value of epsilon
 REPLAY_MEMORY = 50000 # number of previous transitions to remember
@@ -166,7 +166,7 @@ class BrainDQN:
             self.saver.save(self.session, 'saved_networks/' + 'network' + '-dqn', global_step = self.timeStep)
 
         
-    def setPerception(self,nextObservation,action,reward,terminal):
+    def setPerception(self,nextObservation,action,reward,terminal,states):
         #newState = np.append(nextObservation,self.currentState[:,:,1:],axis = 2)
         newState = nextObservation
         self.replayMemory.append((self.currentState,action,reward,newState,terminal))
@@ -190,14 +190,15 @@ class BrainDQN:
             action_index = np.argmax(QValue)
             action[action_index] = 1
 
-        #=======================================================================
-        # # change episilon
-        # if self.epsilon > FINAL_EPSILON and self.timeStep > OBSERVE:
-        #     self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/EXPLORE
-        #=======================================================================
+        # change episilon
+        if self.epsilon > FINAL_EPSILON and self.timeStep > OBSERVE:
+            self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/EXPLORE
 
         return action
 
+    def getActionFromState(self,state):
+        QValue = self.QValue.eval(feed_dict= {self.stateInput:[state]})[0]
+        return np.argmax(QValue)
 
     def getQValueFromState(self,state):
         return self.QValue.eval(feed_dict= {self.stateInput:[state]})[0]
