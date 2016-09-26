@@ -1,1 +1,1 @@
-__all__=['dataset']
+__all__=['dataset','labyrinth_for_reinforcement']

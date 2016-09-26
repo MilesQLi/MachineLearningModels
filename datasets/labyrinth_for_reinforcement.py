@@ -5,7 +5,7 @@ import numpy as np
 class labyrinth(object):
     def __init__(self):
         self.state = 11
-        self.reward = np.ones((12,))**(-0.02)
+        self.reward = np.ones((12,))*(-0.02)
         self.reward[3] = 1
         self.reward[7] = -1
         self.step = np.array(range(12)*4).reshape(4,12).transpose()
@@ -26,7 +26,7 @@ class labyrinth(object):
         
     def move(self, action):
         if self.state == 3 or self.state == 7:
-            return -1
+            return -1, -1, True
         rand = np.random.random()
         index = action.argmax()
         if rand <= 0.8:
@@ -40,7 +40,12 @@ class labyrinth(object):
             state[self.state-1] = 1
         else:
             state[self.state] = 1
-        return (state, self.reward[self.state])    
+        if self.state == 3 or self.state == 7:
+            terminal = True
+        else:
+            terminal = False
+            
+        return state, self.reward[self.state], terminal
     
     def reset(self):
         self.state = 11
