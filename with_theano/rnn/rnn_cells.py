@@ -7,7 +7,7 @@ import theano
 
 
 class lstm(object):
-    def __init__(self, n_in, n_h, emb, pre_fix):     
+    def __init__(self, n_in, n_h, pre_fix):     
         
         self.n_in = n_in
         self.n_h = n_h
@@ -58,7 +58,7 @@ class lstm(object):
         # self.b_y = theano.shared(np.array(np.random.uniform(low=-bound_h, high=bound_h, size=(n_out,)), dtype=theano.config.floatX))  # @UndefinedVariable
         # self.params.append(self.b_y)
         
-        self.c0 = theano.shared(np.array(np.random.uniform(low=-bound_x, high=bound_x, size=(n_h,)), dtype=theano.config.floatX), name=self.name+'c0', borrow=True)  # @UndefinedVariable
+        self.c0 = theano.shared(np.array(np.zeros((n_h,)), dtype=theano.config.floatX), name=self.name+'c0', borrow=True)  # @UndefinedVariable
         self.params.append(self.c0)
         self.h0 = T.tanh(self.c0)
         self.h0.name = self.name+'h0'
@@ -101,7 +101,7 @@ class lstm(object):
 
 
 class gru(object):
-    def __init__(self, n_in, n_h, emb, pre_fix):     
+    def __init__(self, n_in, n_h, pre_fix):     
         
         self.n_in = n_in
         self.n_h = n_h
@@ -131,8 +131,8 @@ class gru(object):
         self.params.append(self.w_xh)
         self.w_hh = theano.shared(np.array(np.random.uniform(low=-bound_h, high=bound_h, size=(n_h, n_h)), dtype=theano.config.floatX), name='w_hh')  # @UndefinedVariable
         self.params.append(self.w_hh)
-        self.h0 = theano.shared(np.array(np.random.uniform(low=-bound_h, high=bound_h, size=(n_h,)), dtype=theano.config.floatX), name='h0')  # @UndefinedVariable
-        
+        self.h0 = theano.shared(np.array(np.zeros((n_h,)), dtype=theano.config.floatX), name='h0')  # @UndefinedVariable
+        self.params.append(self.h0)
         
               
         def one_step(x, m_, h_t1, w_xz, w_hz, w_xr, w_hr, w_xh, w_hh):
@@ -167,7 +167,7 @@ class gru(object):
 
 
 class rnn(object):
-    def __init__(self, n_in, n_h, emb, pre_fix):     
+    def __init__(self, n_in, n_h, pre_fix):     
         
         self.n_in = n_in
         self.n_h = n_h
