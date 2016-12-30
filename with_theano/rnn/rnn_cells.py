@@ -91,11 +91,17 @@ class lstm(object):
         
     def get_sentence_output(self,emb_x,mask):
         [cs, hs], _ = theano.scan(fn=self.normal_one_step, sequences=[emb_x, mask], outputs_info=[T.alloc(self.c0, emb_x.shape[1], self.n_h), T.alloc(self.h0, emb_x.shape[1], self.n_h)], non_sequences=self.params[:-1])  # , None])
+        result = {}
+        result['hs'] = hs
+        result['cs'] = cs
         return cs, hs
     
     def get_onedoc_output(self,x):        
         [cs, hs], _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.c0, self.h0], non_sequences=self.params[:-1])  # , None])
-        return cs, hs
+        result = {}
+        result['hs'] = hs
+        result['cs'] = cs
+        return result
 
 
 
@@ -158,12 +164,16 @@ class gru(object):
         
         
     def get_sentence_output(self,emb_x,mask):
-        [cs, hs], _ = theano.scan(fn=self.normal_one_step, sequences=[emb_x, mask], outputs_info=[T.alloc(self.h0, emb_x.shape[1], self.n_h)], non_sequences=self.params[:-1])  # , None])
-        return cs, hs
+        hs, _ = theano.scan(fn=self.normal_one_step, sequences=[emb_x, mask], outputs_info=[T.alloc(self.h0, emb_x.shape[1], self.n_h)], non_sequences=self.params[:-1])  # , None])
+        result = {}
+        result['hs'] = hs
+        return result
     
     def get_onedoc_output(self,x):        
-        [cs, hs], _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.h0], non_sequences=self.params[:-1])  # , None])
-        return cs, hs
+        hs, _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.h0], non_sequences=self.params[:-1])  # , None])
+        result = {}
+        result['hs'] = hs
+        return result
 
 
 class rnn(object):
@@ -206,10 +216,14 @@ class rnn(object):
         
         
     def get_sentence_output(self,emb_x,mask):
-        [cs, hs], _ = theano.scan(fn=self.normal_one_step, sequences=[emb_x, mask], outputs_info=[T.alloc(self.h0, emb_x.shape[1], self.n_h)], non_sequences=self.params[:-1])  # , None])
-        return cs, hs
+        hs, _ = theano.scan(fn=self.normal_one_step, sequences=[emb_x, mask], outputs_info=[T.alloc(self.h0, emb_x.shape[1], self.n_h)], non_sequences=self.params[:-1])  # , None])
+        result = {}
+        result['hs'] = hs
+        return result
     
     def get_onedoc_output(self,x):        
-        [cs, hs], _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.h0], non_sequences=self.params[:-1])  # , None])
-        return cs, hs
+        hs, _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.h0], non_sequences=self.params[:-1])  # , None])
+        result = {}
+        result['hs'] = hs
+        return result
 
