@@ -94,7 +94,7 @@ class lstm(object):
         result = {}
         result['hs'] = hs
         result['cs'] = cs
-        return cs, hs
+        return result
     
     def get_onedoc_output(self,x):        
         [cs, hs], _ = theano.scan(fn=self.sen2doc_one_step, sequences=x, outputs_info=[self.c0, self.h0], non_sequences=self.params[:-1])  # , None])
