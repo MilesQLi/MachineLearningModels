@@ -4,10 +4,10 @@ import sys
 import time
 
 from sklearn import datasets
-
-from datasets import *
+from sklearn.datasets import *
 import matplotlib.pyplot as plt
 import numpy as np
+sys.path.append('../')
 from with_numpy import *
 
 
