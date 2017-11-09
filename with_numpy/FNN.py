@@ -6,14 +6,14 @@ class FNN(object):
     def __init__(self, n_neurons, n_input, n_ouput):
         self.Ws = []
         self.bs = []
-        self.Ws.append(np.random.uniform(size=(n_input, n_neurons[0])))
-        self.bs.append(np.random.uniform(size=(n_neurons[0],)))
+        self.Ws.append(np.random.uniform(size=(n_input, n_neurons[0]))/10)
+        self.bs.append(np.random.uniform(size=(n_neurons[0],))/10)
         
         for i in range(1, len(n_neurons)):
-            self.Ws.append(np.random.uniform(size=(n_neurons[i - 1], n_neurons[i])))
-            self.bs.append(np.random.uniform(size=(n_neurons[i],)))
-        self.Ws.append(np.random.uniform(size=(n_neurons[len(n_neurons) - 1], n_ouput)))
-        self.bs.append(np.random.uniform(size=(n_ouput,)))
+            self.Ws.append(np.random.uniform(size=(n_neurons[i - 1], n_neurons[i]))/10)
+            self.bs.append(np.random.uniform(size=(n_neurons[i],))/10)
+        self.Ws.append(np.random.uniform(size=(n_neurons[len(n_neurons) - 1], n_ouput))/10)
+        self.bs.append(np.random.uniform(size=(n_ouput,))/10)
     
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))

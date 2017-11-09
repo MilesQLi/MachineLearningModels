@@ -21,7 +21,7 @@ if __name__ == '__main__':
     y = train_y
     valid_x = valid_set[0]
     valid_y = valid_set[1]
-    fnn = FNN.FNN([50], 784, 10)
+    fnn = FNN.FNN([30], 784, 10)
     # print fnn.pred(x)
     # print fnn.pred_prob(x)
     # print fnn.pred_prob(x,True)
